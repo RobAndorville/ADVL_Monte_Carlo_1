@@ -77,6 +77,7 @@
                                <MatrixFormat><%= txtMatrixFormat.Text %></MatrixFormat>
                                <SelectedTab><%= TabControl1.SelectedIndex %></SelectedTab>
                                <SelectedSequenceTab><%= TabControl2.SelectedIndex %></SelectedSequenceTab>
+                               <MatrixOpSeqFileName><%= txtSeqFileName.Text %></MatrixOpSeqFileName>
                            </FormSettings>
 
         'Add code to include other settings to save after the comment line <!---->
@@ -114,6 +115,12 @@
 
             If Settings.<FormSettings>.<SelectedTab>.Value <> Nothing Then TabControl1.SelectedIndex = Settings.<FormSettings>.<SelectedTab>.Value
             If Settings.<FormSettings>.<SelectedSequenceTab>.Value <> Nothing Then TabControl2.SelectedIndex = Settings.<FormSettings>.<SelectedSequenceTab>.Value
+
+            If Settings.<FormSettings>.<MatrixOpSeqFileName>.Value <> Nothing Then
+                txtSeqFileName.Text = Settings.<FormSettings>.<MatrixOpSeqFileName>.Value
+                OpenSeq(txtSeqFileName.Text)
+            End If
+
 
             CheckFormPos()
         End If
@@ -1476,8 +1483,53 @@
 
 
     Private Sub btnNewSeq_Click(sender As Object, e As EventArgs) Handles btnNewSeq.Click
-        'Crerate a new Matrix Operation Sequence.
+        'Create a new Matrix Operation Sequence.
 
+        'Get the new model FileName, DataName, DataLabel and Description:
+        Dim EntryForm As New ADVL_Utilities_Library_1.frmNewDataNameModal
+        EntryForm.EntryName = "NewMatrixOpSeq"
+        EntryForm.Title = "New Matrix Operation Sequence"
+        EntryForm.FileExtension = "MatrixOpSeq"
+        EntryForm.GetFileName = True
+        EntryForm.GetDataName = True
+        EntryForm.GetDataLabel = False
+        EntryForm.GetDataDescription = True
+        EntryForm.SettingsLocn = Main.Project.SettingsLocn
+        EntryForm.DataLocn = Main.Project.DataLocn
+        EntryForm.ApplicationName = Main.ApplicationInfo.Name
+        EntryForm.RestoreFormSettings()
+
+        If EntryForm.ShowDialog() = DialogResult.OK Then
+            txtSeqFileName.Text = EntryForm.FileName 'Note: The EntryForm checks that the FileName is correctly specified and is avaialble for use.
+            txtSeqName.Text = EntryForm.DataName
+            txtSeqDescr.Text = EntryForm.DataDescription
+
+            'Check the sequence name. Get the sequence name from the file name if necessary.
+            Dim mySeqName As String = txtSeqName.Text.Trim
+            If mySeqName = "" Then
+                mySeqName = IO.Path.GetFileNameWithoutExtension(EntryForm.FileName) 'The Sequence Name can have spaces.
+                txtSeqName.Text = mySeqName
+            End If
+
+            OpInfo.Clear()
+            ScalarData.Clear()
+            MatrixData.Clear()
+
+            OpInfo.Add(mySeqName, New MatrixOperationInfo)
+            OpInfo(mySeqName).Description = txtSeqDescr.Text
+            OpInfo(mySeqName).Type = "Matrix Operation Sequence"
+
+            trvMatrixOps.Nodes.Clear() 'Clear the nodes in the Matrix Operations tree.
+            Dim myNode1 As TreeNode = New TreeNode(mySeqName, 0, 1)
+            myNode1.Name = mySeqName
+            trvMatrixOps.Nodes.Add(myNode1)
+
+        Else
+            Exit Sub
+        End If
+
+        Exit Sub
+        'OLD CODE:
 
         'Dim FileName As String = txtSeqFileName.Text.Trim.Replace(" ", "_") 'Trim leading and trailing spaces from the entered file name and replace any internal spaces with "_".
         Dim FileName As String = txtSeqFileName.Text.Trim 'Trim leading and trailing spaces from the entered file.
@@ -3319,12 +3371,20 @@
                 Zip.SelectFileForm.RestoreFormSettings()
                 Zip.SelectFileForm.FileExtension = ".MatrixOpSeq" 'Can also use .FileExtensions = {xxxx, xxxx, xxxx} to specify multiple file types.
                 Zip.SelectFileForm.GetFileList()
-                If Zip.SelectedFile <> "" Then
-                    Dim FileName As String = Zip.SelectedFile
-                    txtSeqFileName.Text = FileName
-                    OpenSeq(FileName)
-                End If
+                'If Zip.SelectedFile <> "" Then
+                '    Dim FileName As String = Zip.SelectedFile
+                '    txtSeqFileName.Text = FileName
+                '    OpenSeq(FileName)
+                'End If
         End Select
+    End Sub
+
+    Private Sub Zip_FileSelected(FileName As String) Handles Zip.FileSelected
+        If Zip.SelectedFile <> "" Then
+            'Dim FileName As String = Zip.SelectedFile
+            txtSeqFileName.Text = FileName
+            OpenSeq(FileName)
+        End If
     End Sub
 
     Private Sub OpenSeq(ByVal SequenceName As String)
@@ -5347,11 +5407,17 @@
             If item.Value.Type = "Scalar Copy" Then 'Check if the Copied Node CopyList is missing the Scalar Copy Node entry.
                 NodeCopyName = item.Key
                 CopiedNodeName = item.Value.Text
-                If OpInfo(CopiedNodeName).CopyList.Contains(NodeCopyName) Then
-                    'The Scalar Copy node is in the CopyList of the Copied node.
+
+                If OpInfo.ContainsKey(CopiedNodeName) Then
+                    If OpInfo(CopiedNodeName).CopyList.Contains(NodeCopyName) Then
+                        'The Scalar Copy node is in the CopyList of the Copied node.
+                    Else
+                        OpInfo(CopiedNodeName).CopyList.Add(NodeCopyName) 'Add the Scalar Copy node name to the CopyList of the Copied node.
+                    End If
                 Else
-                    OpInfo(CopiedNodeName).CopyList.Add(NodeCopyName) 'Add the Scalar Copy node name to the CopyList of the Copied node.
+                    Main.Message.AddWarning("OpInfo does not contain the key: " & CopiedNodeName & vbCrLf)
                 End If
+
             ElseIf item.Value.Type = "Matrix Copy" Then  'Check if the Copied Node CopyList is missing the Matrix Copy Node entry.
                 NodeCopyName = item.Key
                 CopiedNodeName = item.Value.Text
@@ -5461,43 +5527,48 @@
                     If item = "" Then
                         'Blank item - ignore
                     Else
-                        If OpInfo(item).Type = "Scalar Copy" Then
-                            OpInfo(item).Text = NewNodeName 'Update the name of the Node Copy.
+                        If OpInfo.ContainsKey(item) Then
+                            If OpInfo(item).Type = "Scalar Copy" Then
+                                OpInfo(item).Text = NewNodeName 'Update the name of the Node Copy.
 
-                            Dim myNodeCopy As TreeNode() = trvMatrixOps.Nodes.Find(item, True) 'Find all nodes with the name on the CopyList
-                            If myNodeCopy.Count = 0 Then
-                                Main.Message.AddWarning("The node in the Copy List named " & item & " was not found in the node tree." & vbCrLf)
-                            ElseIf myNodeCopy.Count = 1 Then
-                                myNodeCopy(0).Text = NewNodeName 'Update the name of the copied node.
+                                Dim myNodeCopy As TreeNode() = trvMatrixOps.Nodes.Find(item, True) 'Find all nodes with the name on the CopyList
+                                If myNodeCopy.Count = 0 Then
+                                    Main.Message.AddWarning("The node in the Copy List named " & item & " was not found in the node tree." & vbCrLf)
+                                ElseIf myNodeCopy.Count = 1 Then
+                                    myNodeCopy(0).Text = NewNodeName 'Update the name of the copied node.
+                                Else
+                                    Main.Message.AddWarning("The node in the Copy List named " & item & " was found " & myNodeCopy.Count & " times " & " in the node tree." & vbCrLf)
+                                    Main.Message.AddWarning("Only one node with this name was expected." & vbCrLf)
+                                    For Each nodeItem In myNodeCopy
+                                        nodeItem.Text = NewNodeName
+                                    Next
+                                    Main.Message.AddWarning("The name of the Copied Node was updated in each." & vbCrLf)
+                                End If
+
+                            ElseIf OpInfo(item).Type = "Matrix Copy" Then
+
+                                OpInfo(item).Text = NewNodeName 'Update the name of the Node Copy.
+
+                                Dim myNodeCopy As TreeNode() = trvMatrixOps.Nodes.Find(item, True) 'Find all nodes with the name on the CopyList
+                                If myNodeCopy.Count = 0 Then
+                                    Main.Message.AddWarning("The node in the Copy List named " & item & " was not found in the node tree." & vbCrLf)
+                                ElseIf myNodeCopy.Count = 1 Then
+                                    myNodeCopy(0).Text = NewNodeName 'Update the name of the copied node.
+                                Else
+                                    Main.Message.AddWarning("The node in the Copy List named " & item & " was found " & myNodeCopy.Count & " times " & " in the node tree." & vbCrLf)
+                                    Main.Message.AddWarning("Only one node with this name was expected." & vbCrLf)
+                                    For Each nodeItem In myNodeCopy
+                                        nodeItem.Text = NewNodeName
+                                    Next
+                                    Main.Message.AddWarning("The name of the Copied Node was updated in each." & vbCrLf)
+                                    'ShowOpInfo() 'Display the contents of the OpInfo dictionary
+                                End If
+
                             Else
-                                Main.Message.AddWarning("The node in the Copy List named " & item & " was found " & myNodeCopy.Count & " times " & " in the node tree." & vbCrLf)
-                                Main.Message.AddWarning("Only one node with this name was expected." & vbCrLf)
-                                For Each nodeItem In myNodeCopy
-                                    nodeItem.Text = NewNodeName
-                                Next
-                                Main.Message.AddWarning("The name of the Copied Node was updated in each." & vbCrLf)
+                                Main.Message.AddWarning("The node named " & item & " in the Copy List is not a Scalar or Matrix copy." & vbCrLf)
                             End If
-
-                        ElseIf OpInfo(item).Type = "Matrix Copy" Then
-
-                            OpInfo(item).Text = NewNodeName 'Update the name of the Node Copy.
-
-                            Dim myNodeCopy As TreeNode() = trvMatrixOps.Nodes.Find(item, True) 'Find all nodes with the name on the CopyList
-                            If myNodeCopy.Count = 0 Then
-                                Main.Message.AddWarning("The node in the Copy List named " & item & " was not found in the node tree." & vbCrLf)
-                            ElseIf myNodeCopy.Count = 1 Then
-                                myNodeCopy(0).Text = NewNodeName 'Update the name of the copied node.
-                            Else
-                                Main.Message.AddWarning("The node in the Copy List named " & item & " was found " & myNodeCopy.Count & " times " & " in the node tree." & vbCrLf)
-                                Main.Message.AddWarning("Only one node with this name was expected." & vbCrLf)
-                                For Each nodeItem In myNodeCopy
-                                    nodeItem.Text = NewNodeName
-                                Next
-                                Main.Message.AddWarning("The name of the Copied Node was updated in each." & vbCrLf)
-                            End If
-
                         Else
-                            Main.Message.AddWarning("The node named " & item & " in the Copy List is not a Scalar or Matrix copy." & vbCrLf)
+                            Main.Message.AddWarning("OpInfo() does not contain the key: " & item & vbCrLf)
                         End If
                     End If
                 Next
@@ -5505,20 +5576,42 @@
         End If
     End Sub
 
+    Private Sub ShowOpInfo()
+        'Show the contents of the OpInfo dictionary
+
+        Main.Message.AddText("OpInfo() Dictionary Contents:" & vbCrLf & vbCrLf, "Heading")
+
+        For Each item In OpInfo
+            Main.Message.AddText("Node Information: ----------------------------------------------" & vbCrLf, "Bold")
+            Main.Message.AddText("Key: " & item.Key & vbCrLf, "Bold")
+            Main.Message.AddText("Type: " & item.Value.Type & vbCrLf, "Normal")
+            Main.Message.AddText("Text: " & item.Value.Text & vbCrLf, "Normal")
+            Main.Message.AddText("Description: " & item.Value.Description & vbCrLf, "Normal")
+            Main.Message.AddText("Copies of this node: " & vbCrLf, "Bold")
+            For Each copy In item.Value.CopyList
+                Main.Message.AddText("Copy: " & copy & vbCrLf, "Normal")
+            Next
+            Main.Message.AddText("Node Information: ----------------------------------------------" & vbCrLf & vbCrLf, "Bold")
+        Next
+
+    End Sub
+
     Private Sub btnShowNodeList_Click(sender As Object, e As EventArgs) Handles btnShowNodeList.Click
         'Show the Node List Information in the Messge window.
 
-        For Each item In OpInfo
-            Main.Message.Add(vbCrLf & "Node Information: ----------------------------------------------" & vbCrLf)
-            Main.Message.Add("Node name: " & item.Key & vbCrLf)
-            Main.Message.Add("Node text: " & item.Value.Text & vbCrLf)
-            Main.Message.Add("Node text: " & item.Value.Description & vbCrLf)
-            Main.Message.Add("Node copy list: " & vbCrLf)
-            For Each copyItem In item.Value.CopyList
-                Main.Message.Add("  " & copyItem & vbCrLf)
-            Next
-            Main.Message.Add("END Node Information: ------------------------------------------" & vbCrLf)
-        Next
+        ShowOpInfo()
+
+        'For Each item In OpInfo
+        '    Main.Message.Add(vbCrLf & "Node Information: ----------------------------------------------" & vbCrLf)
+        '    Main.Message.Add("Node name: " & item.Key & vbCrLf)
+        '    Main.Message.Add("Node text: " & item.Value.Text & vbCrLf)
+        '    Main.Message.Add("Node text: " & item.Value.Description & vbCrLf)
+        '    Main.Message.Add("Node copy list: " & vbCrLf)
+        '    For Each copyItem In item.Value.CopyList
+        '        Main.Message.Add("  " & copyItem & vbCrLf)
+        '    Next
+        '    Main.Message.Add("END Node Information: ------------------------------------------" & vbCrLf)
+        'Next
     End Sub
 
     Private Sub btnCleanupNodeList_Click(sender As Object, e As EventArgs) Handles btnCleanupNodeList.Click
@@ -5545,6 +5638,8 @@
     Private Sub ToolStripMenuItem1_OpenNode_Click(sender As Object, e As EventArgs) Handles ToolStripMenuItem1_OpenNode.Click
 
     End Sub
+
+
 
 #End Region 'Form Methods ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

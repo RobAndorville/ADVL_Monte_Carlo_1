@@ -3354,7 +3354,8 @@ Public Class frmDistribChart
                 dgvAnnot.Rows(RowNo).Cells(0).Value = True
                 dgvAnnot.Rows(RowNo).Cells(1).Value = True
                 dgvAnnot.Rows(RowNo).Cells(2).Value = "Standard Deviation"
-                dgvAnnot.Rows(RowNo).Cells(3).Value = 1
+                'dgvAnnot.Rows(RowNo).Cells(3).Value = 1
+                dgvAnnot.Rows(RowNo).Cells(3).Value = -1
                 dgvAnnot.Rows(RowNo).Cells(4).Value = Label
                 dgvAnnot.Rows(RowNo).Cells(5).Value = SDevN1Prob
                 dgvAnnot.Rows(RowNo).Cells(6).Value = CDFVal
@@ -3550,9 +3551,7 @@ Public Class frmDistribChart
 
     End Sub
 
-    Private Sub dgvAnnot_CellContentClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgvAnnot.CellContentClick
 
-    End Sub
 
     Private Sub dgvAnnot_DataError(sender As Object, e As DataGridViewDataErrorEventArgs) Handles dgvAnnot.DataError
         Main.Message.AddWarning(e.Exception.Message & vbCrLf)

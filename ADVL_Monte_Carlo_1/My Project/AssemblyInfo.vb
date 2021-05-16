@@ -8,11 +8,11 @@ Imports System.Runtime.InteropServices
 
 ' Review the values of the assembly attributes
 
-<Assembly: AssemblyTitle("ADVL_Application_Template")>
+<Assembly: AssemblyTitle("ADVL_Monte_Carlo_1")>
 <Assembly: AssemblyDescription("")>
 <Assembly: AssemblyCompany("")>
-<Assembly: AssemblyProduct("ADVL_Application_Template")>
-<Assembly: AssemblyCopyright("Copyright ©  2016")>
+<Assembly: AssemblyProduct("ADVL_Monte_Carlo_1")>
+<Assembly: AssemblyCopyright("Copyright ©  2020 Signalworks Pty Ltd, ABN 26 066 681 598")>
 <Assembly: AssemblyTrademark("")>
 
 <Assembly: ComVisible(False)>
@@ -31,5 +31,5 @@ Imports System.Runtime.InteropServices
 ' by using the '*' as shown below:
 ' <Assembly: AssemblyVersion("1.0.*")> 
 
-<Assembly: AssemblyVersion("1.0.1.0")>
-<Assembly: AssemblyFileVersion("1.0.1.0")>
+<Assembly: AssemblyVersion("1.0.1.14")>
+<Assembly: AssemblyFileVersion("1.0.1.14")>

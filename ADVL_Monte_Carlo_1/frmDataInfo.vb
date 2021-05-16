@@ -160,8 +160,15 @@
             If Settings.<FormSettings>.<StdDevFormat>.Value <> Nothing Then txtStdDevFormat.Text = Settings.<FormSettings>.<StdDevFormat>.Value
             If Settings.<FormSettings>.<VarFormat>.Value <> Nothing Then txtVarFormat.Text = Settings.<FormSettings>.<VarFormat>.Value
 
-            If Settings.<FormSettings>.<CorrelationsFormat>.Value <> Nothing Then txtCorrMatFormat.Text = Settings.<FormSettings>.<CorrelationsFormat>.Value
-            If Settings.<FormSettings>.<CorrelationsCholeskyFormat>.Value <> Nothing Then txtCorrCholFormat.Text = Settings.<FormSettings>.<CorrelationsCholeskyFormat>.Value
+            If Settings.<FormSettings>.<CorrelationsFormat>.Value <> Nothing Then
+                txtCorrMatFormat.Text = Settings.<FormSettings>.<CorrelationsFormat>.Value
+                dgvCorrMatrix.DefaultCellStyle.Format = txtCorrMatFormat.Text
+            End If
+
+            If Settings.<FormSettings>.<CorrelationsCholeskyFormat>.Value <> Nothing Then
+                txtCorrCholFormat.Text = Settings.<FormSettings>.<CorrelationsCholeskyFormat>.Value
+                dgvCorrCholeski.DefaultCellStyle.Format = txtCorrCholFormat.Text
+            End If
 
             If Settings.<FormSettings>.<CovarianceFormat>.Value <> Nothing Then txtCovMatFormat.Text = Settings.<FormSettings>.<CovarianceFormat>.Value
             If Settings.<FormSettings>.<CovarianceCholeskyFormat>.Value <> Nothing Then txtCovCholFormat.Text = Settings.<FormSettings>.<CovarianceCholeskyFormat>.Value
@@ -959,6 +966,22 @@
 
     End Sub
 
+    Private Sub txtCorrMatFormat_TextChanged(sender As Object, e As EventArgs) Handles txtCorrMatFormat.TextChanged
+
+    End Sub
+
+
+    Private Sub txtCorrMatFormat_LostFocus(sender As Object, e As EventArgs) Handles txtCorrMatFormat.LostFocus
+        dgvCorrMatrix.DefaultCellStyle.Format = txtCorrMatFormat.Text
+    End Sub
+
+    Private Sub txtCorrCholFormat_TextChanged(sender As Object, e As EventArgs) Handles txtCorrCholFormat.TextChanged
+
+    End Sub
+
+    Private Sub txtCorrCholFormat_LostFocus(sender As Object, e As EventArgs) Handles txtCorrCholFormat.LostFocus
+        dgvCorrCholeski.DefaultCellStyle.Format = txtCorrCholFormat.Text
+    End Sub
 
 #End Region 'Form Methods ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

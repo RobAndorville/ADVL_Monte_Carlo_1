@@ -176,6 +176,10 @@ Public Class Main
     'Declare Forms used by the application:
     Public WithEvents TemplateForm As frmTemplate
     Public WithEvents WebPageList As frmWebPageList
+    Public WithEvents ProjectArchive As frmArchive 'Form used to view the files in a Project archive
+    Public WithEvents SettingsArchive As frmArchive 'Form used to view the files in a Settings archive
+    Public WithEvents DataArchive As frmArchive 'Form used to view the files in a Data archive
+    Public WithEvents SystemArchive As frmArchive 'Form used to view the files in a System archive
 
     Public WithEvents NewHtmlDisplay As frmHtmlDisplay
     Public HtmlDisplayFormList As New ArrayList 'Used for displaying multiple HtmlDisplay forms.
@@ -989,11 +993,31 @@ Public Class Main
         'Read the Application Information file: ---------------------------------------------
         ApplicationInfo.ApplicationDir = My.Application.Info.DirectoryPath.ToString 'Set the Application Directory property
 
-        'Get the Application Version Information:
-        ApplicationInfo.Version.Major = My.Application.Info.Version.Major
-        ApplicationInfo.Version.Minor = My.Application.Info.Version.Minor
-        ApplicationInfo.Version.Build = My.Application.Info.Version.Build
-        ApplicationInfo.Version.Revision = My.Application.Info.Version.Revision
+        ''Get the Application Version Information:
+        'ApplicationInfo.Version.Major = My.Application.Info.Version.Major
+        'ApplicationInfo.Version.Minor = My.Application.Info.Version.Minor
+        'ApplicationInfo.Version.Build = My.Application.Info.Version.Build
+        'ApplicationInfo.Version.Revision = My.Application.Info.Version.Revision
+
+        'The code above does not appear to work.
+        'New code:
+        ''Get the Application Version Information:
+        'If System.Deployment.Application.ApplicationDeployment.IsNetworkDeployed Then
+        '    'Application is network deployed.
+        '    ApplicationInfo.Version.Major = System.Deployment.Application.ApplicationDeployment.CurrentDeployment.CurrentVersion.Major
+        '    ApplicationInfo.Version.Minor = System.Deployment.Application.ApplicationDeployment.CurrentDeployment.CurrentVersion.Minor
+        '    ApplicationInfo.Version.Build = System.Deployment.Application.ApplicationDeployment.CurrentDeployment.CurrentVersion.Build
+        '    ApplicationInfo.Version.Revision = System.Deployment.Application.ApplicationDeployment.CurrentDeployment.CurrentVersion.Revision
+        'Else
+        '    'Application is not network deployed.
+        '    ApplicationInfo.Version.Major = My.Application.Info.Version.Major
+        '    ApplicationInfo.Version.Minor = My.Application.Info.Version.Minor
+        '    ApplicationInfo.Version.Build = My.Application.Info.Version.Build
+        '    ApplicationInfo.Version.Revision = My.Application.Info.Version.Revision
+        'End If
+
+        'This code is now at the end of this method.
+
 
         If ApplicationInfo.ApplicationLocked Then
             MessageBox.Show("The application is locked. If the application is not already in use, remove the 'Application_Info.lock file from the application directory: " & ApplicationInfo.ApplicationDir, "Notice", MessageBoxButtons.OK)
@@ -1030,8 +1054,14 @@ Public Class Main
         Me.Show() 'Show this form before showing the Message form - This will show the App icon on top in the TaskBar.
 
         'Start showing messages here - Message system is set up.
-        Message.AddText("------------------- Starting Application: ADVL Application Template ----------------- " & vbCrLf, "Heading")
-        Message.AddText("Application usage: Total duration = " & Format(ApplicationUsage.TotalDuration.TotalHours, "#.##") & " hours" & vbCrLf, "Normal")
+        'Message.AddText("------------------- Starting Application: ADVL Application Template ----------------- " & vbCrLf, "Heading")
+        Message.AddText("------------------- Starting Application: ADVL Monte Carlo ------------------------------- " & vbCrLf, "Heading")
+        'Message.AddText("Application usage: Total duration = " & Format(ApplicationUsage.TotalDuration.TotalHours, "#.##") & " hours" & vbCrLf, "Normal")
+        Dim TotalDuration As String = ApplicationUsage.TotalDuration.Days.ToString.PadLeft(5, "0"c) & "d:" &
+                           ApplicationUsage.TotalDuration.Hours.ToString.PadLeft(2, "0"c) & "h:" &
+                           ApplicationUsage.TotalDuration.Minutes.ToString.PadLeft(2, "0"c) & "m:" &
+                           ApplicationUsage.TotalDuration.Seconds.ToString.PadLeft(2, "0"c) & "s"
+        Message.AddText("Application usage: Total duration = " & TotalDuration & vbCrLf, "Normal")
 
         'https://msdn.microsoft.com/en-us/library/z2d603cy(v=vs.80).aspx#Y550
         'Process any command line arguments:
@@ -1458,13 +1488,7 @@ Public Class Main
 
         chkRemoveUnusedValues.Checked = True
 
-
-
-
-
-
-
-
+        TabPage2.AllowDrop = True 'Allow archived project to be dropped onto the Project Information page. The Project will be extracted from the Archive and opened.
 
         InitialiseForm() 'Initialise the form for a new project.
 
@@ -1490,6 +1514,37 @@ Public Class Main
         Else
             'Connect to ComNet using the connection name StartupConnectionName.
             ConnectToComNet(StartupConnectionName)
+        End If
+
+        'If System.Deployment.Application.ApplicationDeployment.IsNetworkDeployed Then
+        '    Message.Add("Application version: " & System.Deployment.Application.ApplicationDeployment.CurrentDeployment.CurrentVersion.ToString & vbCrLf)
+        '    'This version information is defined on: MyProject \ Publish
+        'Else
+        '    Message.Add("The Application is in Debug mode. The Version information may be incorrect." & vbCrLf)
+        '    Message.Add("Application version: " & My.Application.Info.Version.ToString & vbCrLf)
+        '    'This version information is defined on: MyProject \ Application \ Assembly Information
+        'End If
+
+        'Get the Application Version Information:
+        If System.Deployment.Application.ApplicationDeployment.IsNetworkDeployed Then
+            'Application is network deployed.
+            ApplicationInfo.Version.Number = System.Deployment.Application.ApplicationDeployment.CurrentDeployment.CurrentVersion.ToString
+            ApplicationInfo.Version.Major = System.Deployment.Application.ApplicationDeployment.CurrentDeployment.CurrentVersion.Major
+            ApplicationInfo.Version.Minor = System.Deployment.Application.ApplicationDeployment.CurrentDeployment.CurrentVersion.Minor
+            ApplicationInfo.Version.Build = System.Deployment.Application.ApplicationDeployment.CurrentDeployment.CurrentVersion.Build
+            ApplicationInfo.Version.Revision = System.Deployment.Application.ApplicationDeployment.CurrentDeployment.CurrentVersion.Revision
+            ApplicationInfo.Version.Source = "Publish"
+            Message.Add("Application version: " & System.Deployment.Application.ApplicationDeployment.CurrentDeployment.CurrentVersion.ToString & vbCrLf)
+        Else
+            'Application is not network deployed.
+            ApplicationInfo.Version.Number = My.Application.Info.Version.ToString
+            ApplicationInfo.Version.Major = My.Application.Info.Version.Major
+            ApplicationInfo.Version.Minor = My.Application.Info.Version.Minor
+            ApplicationInfo.Version.Build = My.Application.Info.Version.Build
+            ApplicationInfo.Version.Revision = My.Application.Info.Version.Revision
+            ApplicationInfo.Version.Source = "Assembly"
+            'Message.Add("The Application is in Debug mode. The Version information may be incorrect." & vbCrLf)
+            Message.Add("Application version: " & My.Application.Info.Version.ToString & vbCrLf)
         End If
 
     End Sub
@@ -1552,16 +1607,25 @@ Public Class Main
             chkConnect.Checked = False
         End If
 
-        txtTotalDuration.Text = Project.Usage.TotalDuration.Days.ToString.PadLeft(5, "0"c) & ":" &
-                                Project.Usage.TotalDuration.Hours.ToString.PadLeft(2, "0"c) & ":" &
-                                Project.Usage.TotalDuration.Minutes.ToString.PadLeft(2, "0"c) & ":" &
-                                Project.Usage.TotalDuration.Seconds.ToString.PadLeft(2, "0"c)
+        'txtTotalDuration.Text = Project.Usage.TotalDuration.Days.ToString.PadLeft(5, "0"c) & ":" &
+        '                        Project.Usage.TotalDuration.Hours.ToString.PadLeft(2, "0"c) & ":" &
+        '                        Project.Usage.TotalDuration.Minutes.ToString.PadLeft(2, "0"c) & ":" &
+        '                        Project.Usage.TotalDuration.Seconds.ToString.PadLeft(2, "0"c)
 
-        txtCurrentDuration.Text = Project.Usage.CurrentDuration.Days.ToString.PadLeft(5, "0"c) & ":" &
-                                  Project.Usage.CurrentDuration.Hours.ToString.PadLeft(2, "0"c) & ":" &
-                                  Project.Usage.CurrentDuration.Minutes.ToString.PadLeft(2, "0"c) & ":" &
-                                  Project.Usage.CurrentDuration.Seconds.ToString.PadLeft(2, "0"c)
+        'txtCurrentDuration.Text = Project.Usage.CurrentDuration.Days.ToString.PadLeft(5, "0"c) & ":" &
+        '                          Project.Usage.CurrentDuration.Hours.ToString.PadLeft(2, "0"c) & ":" &
+        '                          Project.Usage.CurrentDuration.Minutes.ToString.PadLeft(2, "0"c) & ":" &
+        '                          Project.Usage.CurrentDuration.Seconds.ToString.PadLeft(2, "0"c)
 
+        txtTotalDuration.Text = Project.Usage.TotalDuration.Days.ToString.PadLeft(5, "0"c) & "d:" &
+                        Project.Usage.TotalDuration.Hours.ToString.PadLeft(2, "0"c) & "h:" &
+                        Project.Usage.TotalDuration.Minutes.ToString.PadLeft(2, "0"c) & "m:" &
+                        Project.Usage.TotalDuration.Seconds.ToString.PadLeft(2, "0"c) & "s"
+
+        txtCurrentDuration.Text = Project.Usage.CurrentDuration.Days.ToString.PadLeft(5, "0"c) & "d:" &
+                                  Project.Usage.CurrentDuration.Hours.ToString.PadLeft(2, "0"c) & "h:" &
+                                  Project.Usage.CurrentDuration.Minutes.ToString.PadLeft(2, "0"c) & "m:" &
+                                  Project.Usage.CurrentDuration.Seconds.ToString.PadLeft(2, "0"c) & "s"
 
     End Sub
 
@@ -3361,6 +3425,17 @@ Public Class Main
 
     Private Sub Project_Closing() Handles Project.Closing
         'The current project is closing.
+        CloseProject()
+        'SaveFormSettings() 'Save the form settings - they are saved in the Project before is closes.
+        'SaveProjectSettings() 'Update this subroutine if project settings need to be saved.
+        'Project.Usage.SaveUsageInfo() 'Save the current project usage information.
+        'Project.UnlockProject() 'Unlock the current project before it Is closed.
+        'If ConnectedToComNet Then DisconnectFromComNet() 'ADDED 9Apr20
+    End Sub
+
+
+    Private Sub CloseProject()
+        'Close the Project:
         SaveFormSettings() 'Save the form settings - they are saved in the Project before is closes.
         SaveProjectSettings() 'Update this subroutine if project settings need to be saved.
         Project.Usage.SaveUsageInfo() 'Save the current project usage information.
@@ -3370,7 +3445,51 @@ Public Class Main
 
     Private Sub Project_Selected() Handles Project.Selected
         'A new project has been selected.
+        OpenProject()
+        'RestoreFormSettings()
+        'Project.ReadProjectInfoFile()
 
+        'Project.ReadParameters()
+        'Project.ReadParentParameters()
+        'If Project.ParentParameterExists("ProNetName") Then
+        '    Project.AddParameter("ProNetName", Project.ParentParameter("ProNetName").Value, Project.ParentParameter("ProNetName").Description) 'AddParameter will update the parameter if it already exists.
+        '    ProNetName = Project.Parameter("ProNetName").Value
+        'Else
+        '    ProNetName = Project.GetParameter("ProNetName")
+        'End If
+        'If Project.ParentParameterExists("ProNetPath") Then 'Get the parent parameter value - it may have been updated.
+        '    Project.AddParameter("ProNetPath", Project.ParentParameter("ProNetPath").Value, Project.ParentParameter("ProNetPath").Description) 'AddParameter will update the parameter if it already exists.
+        '    ProNetPath = Project.Parameter("ProNetPath").Value
+        'Else
+        '    ProNetPath = Project.GetParameter("ProNetPath") 'If the parameter does not exist, the value is set to ""
+        'End If
+        'Project.SaveParameters() 'These should be saved now - child projects look for parent parameters in the parameter file.
+
+        'Project.LockProject() 'Lock the project while it is open in this application.
+
+        'Project.Usage.StartTime = Now
+
+        'ApplicationInfo.SettingsLocn = Project.SettingsLocn
+        'Message.SettingsLocn = Project.SettingsLocn
+        'Message.Show() 'Added 18May19
+
+        ''Restore the new project settings:
+        'RestoreProjectSettings() 'Update this subroutine if project settings need to be restored.
+
+        'ShowProjectInfo()
+
+        'If Project.ConnectOnOpen Then
+        '    ConnectToComNet() 'The Project is set to connect when it is opened.
+        'ElseIf ApplicationInfo.ConnectOnStartup Then
+        '    ConnectToComNet() 'The Application is set to connect when it is started.
+        'Else
+        '    'Don't connect to ComNet.
+        'End If
+
+    End Sub
+
+    Private Sub OpenProject()
+        'Open the Project:
         RestoreFormSettings()
         Project.ReadProjectInfoFile()
 
@@ -3410,7 +3529,6 @@ Public Class Main
         Else
             'Don't connect to ComNet.
         End If
-
     End Sub
 
     Private Sub chkConnect_LostFocus(sender As Object, e As EventArgs) Handles chkConnect.LostFocus
@@ -3822,10 +3940,15 @@ Public Class Main
     Private Sub TabPage2_Enter(sender As Object, e As EventArgs) Handles TabPage2.Enter
         'Update the current duration:
 
-        txtCurrentDuration.Text = Project.Usage.CurrentDuration.Days.ToString.PadLeft(5, "0"c) & ":" &
-                                   Project.Usage.CurrentDuration.Hours.ToString.PadLeft(2, "0"c) & ":" &
-                                   Project.Usage.CurrentDuration.Minutes.ToString.PadLeft(2, "0"c) & ":" &
-                                   Project.Usage.CurrentDuration.Seconds.ToString.PadLeft(2, "0"c)
+        'txtCurrentDuration.Text = Project.Usage.CurrentDuration.Days.ToString.PadLeft(5, "0"c) & ":" &
+        '                           Project.Usage.CurrentDuration.Hours.ToString.PadLeft(2, "0"c) & ":" &
+        '                           Project.Usage.CurrentDuration.Minutes.ToString.PadLeft(2, "0"c) & ":" &
+        '                           Project.Usage.CurrentDuration.Seconds.ToString.PadLeft(2, "0"c)
+
+        txtCurrentDuration.Text = Project.Usage.CurrentDuration.Days.ToString.PadLeft(5, "0"c) & "d:" &
+                                   Project.Usage.CurrentDuration.Hours.ToString.PadLeft(2, "0"c) & "h:" &
+                                   Project.Usage.CurrentDuration.Minutes.ToString.PadLeft(2, "0"c) & "m:" &
+                                   Project.Usage.CurrentDuration.Seconds.ToString.PadLeft(2, "0"c) & "s"
 
         Timer1.Interval = 5000 '5 seconds
         Timer1.Enabled = True
@@ -3836,10 +3959,15 @@ Public Class Main
     Private Sub Timer1_Tick(sender As Object, e As EventArgs) Handles Timer1.Tick
         'Update the current duration:
 
-        txtCurrentDuration.Text = Project.Usage.CurrentDuration.Days.ToString.PadLeft(5, "0"c) & ":" &
-                           Project.Usage.CurrentDuration.Hours.ToString.PadLeft(2, "0"c) & ":" &
-                           Project.Usage.CurrentDuration.Minutes.ToString.PadLeft(2, "0"c) & ":" &
-                           Project.Usage.CurrentDuration.Seconds.ToString.PadLeft(2, "0"c)
+        'txtCurrentDuration.Text = Project.Usage.CurrentDuration.Days.ToString.PadLeft(5, "0"c) & ":" &
+        '                   Project.Usage.CurrentDuration.Hours.ToString.PadLeft(2, "0"c) & ":" &
+        '                   Project.Usage.CurrentDuration.Minutes.ToString.PadLeft(2, "0"c) & ":" &
+        '                   Project.Usage.CurrentDuration.Seconds.ToString.PadLeft(2, "0"c)
+
+        txtCurrentDuration.Text = Project.Usage.CurrentDuration.Days.ToString.PadLeft(5, "0"c) & "d:" &
+                           Project.Usage.CurrentDuration.Hours.ToString.PadLeft(2, "0"c) & "h:" &
+                           Project.Usage.CurrentDuration.Minutes.ToString.PadLeft(2, "0"c) & "m:" &
+                           Project.Usage.CurrentDuration.Seconds.ToString.PadLeft(2, "0"c) & "s"
     End Sub
 
     Private Sub TabPage2_Leave(sender As Object, e As EventArgs) Handles TabPage2.Leave
@@ -3886,36 +4014,390 @@ Public Class Main
     End Sub
 
     Private Sub btnOpenProject_Click(sender As Object, e As EventArgs) Handles btnOpenProject.Click
-
+        'Open the Project directory or archive.
         If Project.Type = ADVL_Utilities_Library_1.Project.Types.Archive Then
-
+            If IsNothing(ProjectArchive) Then
+                ProjectArchive = New frmArchive
+                ProjectArchive.Show()
+                'ProjectArchive.Text = "Project Archive"
+                ProjectArchive.Title = "Project Archive"
+                ProjectArchive.Path = Project.Path
+            Else
+                ProjectArchive.Show()
+                ProjectArchive.BringToFront()
+            End If
         Else
             Process.Start(Project.Path)
         End If
+    End Sub
 
+    Private Sub ProjectArchive_FormClosed(sender As Object, e As FormClosedEventArgs) Handles ProjectArchive.FormClosed
+        ProjectArchive = Nothing
     End Sub
 
     Private Sub btnOpenSettings_Click(sender As Object, e As EventArgs) Handles btnOpenSettings.Click
+        'Open the Settings directory or archive.
         If Project.SettingsLocn.Type = ADVL_Utilities_Library_1.FileLocation.Types.Directory Then
             Process.Start(Project.SettingsLocn.Path)
+        ElseIf Project.SettingsLocn.Type = ADVL_Utilities_Library_1.FileLocation.Types.Archive Then
+            If IsNothing(SettingsArchive) Then
+                SettingsArchive = New frmArchive
+                SettingsArchive.Show()
+                'SettingsArchive.Text = "Settings Archive"
+                SettingsArchive.Title = "Settings Archive"
+                SettingsArchive.Path = Project.SettingsLocn.Path
+            Else
+                SettingsArchive.Show()
+                SettingsArchive.BringToFront()
+            End If
         End If
+    End Sub
+
+    Private Sub SettingsArchive_FormClosed(sender As Object, e As FormClosedEventArgs) Handles SettingsArchive.FormClosed
+        SettingsArchive = Nothing
     End Sub
 
     Private Sub btnOpenData_Click(sender As Object, e As EventArgs) Handles btnOpenData.Click
+        'Open the Data directory or archive.
         If Project.DataLocn.Type = ADVL_Utilities_Library_1.FileLocation.Types.Directory Then
             Process.Start(Project.DataLocn.Path)
+        ElseIf Project.DataLocn.Type = ADVL_Utilities_Library_1.FileLocation.Types.Archive Then
+            If IsNothing(DataArchive) Then
+                DataArchive = New frmArchive
+                DataArchive.Show()
+                'DataArchive.Text = "Data Archive"
+                DataArchive.Title = "Data Archive"
+                DataArchive.Path = Project.DataLocn.Path
+            Else
+                DataArchive.Show()
+                DataArchive.BringToFront()
+            End If
         End If
     End Sub
 
+    Private Sub DataArchive_FormClosed(sender As Object, e As FormClosedEventArgs) Handles DataArchive.FormClosed
+        DataArchive = Nothing
+    End Sub
+
     Private Sub btnOpenSystem_Click(sender As Object, e As EventArgs) Handles btnOpenSystem.Click
+        'Open the System directory or archive.
         If Project.SystemLocn.Type = ADVL_Utilities_Library_1.FileLocation.Types.Directory Then
             Process.Start(Project.SystemLocn.Path)
+        ElseIf Project.SystemLocn.Type = ADVL_Utilities_Library_1.FileLocation.Types.Archive Then
+            If IsNothing(SystemArchive) Then
+                SystemArchive = New frmArchive
+                SystemArchive.Show()
+                'SystemArchive.Text = "System Archive"
+                SystemArchive.Title = "System Archive"
+                SystemArchive.Path = Project.SystemLocn.Path
+            Else
+                SystemArchive.Show()
+                SystemArchive.BringToFront()
+            End If
         End If
+    End Sub
+
+    Private Sub SystemArchive_FormClosed(sender As Object, e As FormClosedEventArgs) Handles SystemArchive.FormClosed
+        SystemArchive = Nothing
     End Sub
 
     Private Sub btnOpenAppDir_Click(sender As Object, e As EventArgs) Handles btnOpenAppDir.Click
         Process.Start(ApplicationInfo.ApplicationDir)
     End Sub
+
+    Private Sub btnOpenParentDir_Click(sender As Object, e As EventArgs) Handles btnOpenParentDir.Click
+        'Open the Parent directory of the selected project.
+        Dim ParentDir As String = System.IO.Directory.GetParent(Project.Path).FullName
+        If System.IO.Directory.Exists(ParentDir) Then
+            Process.Start(ParentDir)
+        Else
+            Message.AddWarning("The parent directory was not found: " & ParentDir & vbCrLf)
+        End If
+    End Sub
+
+    Private Sub btnCreateArchive_Click(sender As Object, e As EventArgs) Handles btnCreateArchive.Click
+        'Create a Project Archive file.
+        If Project.Type = ADVL_Utilities_Library_1.Project.Types.Archive Then
+            'The project is contained in a .AdvlProject file.
+            'This file will be saved in a zip file in the parent directory with the same name but with extension .AdvlArchive
+
+            'Dim ParentDir As String = System.IO.Directory.GetParent(Project.Path).FullName
+            'Dim ProjectArchiveName As String = System.IO.Path.GetFileNameWithoutExtension(Project.Path) & ".AdvlArchive"
+
+            'If My.Computer.FileSystem.FileExists(ParentDir & "\" & ProjectArchiveName) Then 'The Project Archive file already exists.
+            '    Message.Add("The Project Archive file already exists: " & ParentDir & "\" & ProjectArchiveName & vbCrLf)
+            'Else 'The Project Archive file does not exist. OK to create the Archive.
+            '    System.IO.Compression.ZipFile.CreateFromDirectory(Project.Path, ParentDir & "\" & ProjectArchiveName)
+
+            '    'Remove all Lock files:
+            '    'To Do
+
+            '    Message.Add("Project Archive file created: " & ParentDir & "\" & ProjectArchiveName & vbCrLf)
+            'End If
+
+            'UPDATE: .AdvlProject files are alreay zip files. No need to generate an archive.
+            Message.Add("The Project is an Archive type. It is already in an archived format." & vbCrLf)
+
+        Else
+            'The project is contained in the directory Project.Path.
+            'This directory and contents will be saved in a zip file in the parent directory with the same name but with extension .AdvlArchive.
+
+            Dim ParentDir As String = System.IO.Directory.GetParent(Project.Path).FullName
+            Dim ProjectArchiveName As String = System.IO.Path.GetFileName(Project.Path) & ".AdvlArchive"
+
+            If My.Computer.FileSystem.FileExists(ParentDir & "\" & ProjectArchiveName) Then 'The Project Archive file already exists.
+                Message.Add("The Project Archive file already exists: " & ParentDir & "\" & ProjectArchiveName & vbCrLf)
+            Else 'The Project Archive file does not exist. OK to create the Archive.
+                System.IO.Compression.ZipFile.CreateFromDirectory(Project.Path, ParentDir & "\" & ProjectArchiveName)
+
+                'Remove all Lock files:
+                Dim Zip As System.IO.Compression.ZipArchive
+                Zip = System.IO.Compression.ZipFile.Open(ParentDir & "\" & ProjectArchiveName, IO.Compression.ZipArchiveMode.Update)
+                Dim DeleteList As New List(Of String) 'List of entry names to delete
+                Dim myEntry As System.IO.Compression.ZipArchiveEntry
+                For Each entry As System.IO.Compression.ZipArchiveEntry In Zip.Entries
+                    If entry.Name = "Project.Lock" Then
+                        'entry.Delete()
+                        DeleteList.Add(entry.FullName)
+                    End If
+                Next
+                For Each item In DeleteList
+                    myEntry = Zip.GetEntry(item)
+                    myEntry.Delete()
+                Next
+                Zip.Dispose()
+
+                Message.Add("Project Archive file created: " & ParentDir & "\" & ProjectArchiveName & vbCrLf)
+            End If
+        End If
+    End Sub
+
+    Private Sub TabPage2_DragEnter(sender As Object, e As DragEventArgs) Handles TabPage2.DragEnter
+        'DragEnter: An object has been dragged into TabPage2 - Project Information tab.
+        'This code is required to get the link to the item(s) being dragged into Project Information:
+        If e.Data.GetDataPresent(DataFormats.FileDrop) Then
+            e.Effect = DragDropEffects.Link
+        End If
+    End Sub
+
+    Private Sub TabPage2_DragDrop(sender As Object, e As DragEventArgs) Handles TabPage2.DragDrop
+        'A file has been dropped into the Project Information tab.
+
+        Dim Path As String()
+        Path = e.Data.GetData(DataFormats.FileDrop)
+        Dim I As Integer
+
+        If Path.Count > 0 Then
+            If Path.Count > 1 Then
+                Message.AddWarning("More than one file has been dropped into the Project Information tab. Only the first one will be opened." & vbCrLf)
+            End If
+
+            Try
+                Dim ArchivedProjectPath As String = Path(0)
+                If ArchivedProjectPath.EndsWith(".AdvlArchive") Then
+                    Message.Add("The archived project will be opened: " & vbCrLf & ArchivedProjectPath & vbCrLf)
+                    OpenArchivedProject(ArchivedProjectPath)
+                Else
+                    Message.Add("The dropped file is not an archived project: " & vbCrLf & ArchivedProjectPath & vbCrLf)
+                End If
+            Catch ex As Exception
+                Message.AddWarning("Error opening dropped archived project. " & ex.Message & vbCrLf)
+            End Try
+        End If
+
+    End Sub
+
+    Private Sub btnOpenArchive_Click(sender As Object, e As EventArgs) Handles btnOpenArchive.Click
+        'Open a Project Archive file.
+
+        'Use the OpenFileDialog to look for an .AdvlArchive file.
+        'Start looking in the ParentDir.
+
+        OpenFileDialog1.Title = "Select an Archived Project File"
+        OpenFileDialog1.InitialDirectory = System.IO.Directory.GetParent(Project.Path).FullName
+        OpenFileDialog1.Filter = "Archived Project|*.AdvlArchive"
+        If OpenFileDialog1.ShowDialog = DialogResult.OK Then
+            Dim FileName As String = OpenFileDialog1.FileName
+            OpenArchivedProject(FileName)
+            ''Message.Add("Selected Archived Project file: " & FileName & vbCrLf)
+            'Dim Zip As System.IO.Compression.ZipArchive
+            'Try
+            '    Zip = System.IO.Compression.ZipFile.OpenRead(FileName)
+
+            '    Dim Entry As System.IO.Compression.ZipArchiveEntry = Zip.GetEntry("Project_Info_ADVL_2.xml")
+            '    If IsNothing(Entry) Then
+            '        Message.AddWarning("The file is not an Archived Andorville Project." & vbCrLf)
+            '        'Check if it has a .AdvlProject extension -  
+            '        'NOTE: the Archive project type, with the .AdvlProject extension will be deprecated.
+            '        'Hybrid projects are the preferred type.
+
+            '    Else
+            '        Message.Add("The file is an Archived Andorville Project." & vbCrLf)
+            '        Dim ParentDir As String = System.IO.Directory.GetParent(FileName).FullName
+            '        Dim ProjectName As String = System.IO.Path.GetFileNameWithoutExtension(FileName)
+            '        Message.Add("The Project will be expanded in the directory: " & ParentDir & vbCrLf)
+            '        Message.Add("The Project name will be: " & ProjectName & vbCrLf)
+            '        Zip.Dispose()
+            '        If System.IO.Directory.Exists(ParentDir & "\" & ProjectName) Then
+            '            Message.AddWarning("The Project already exists: " & ParentDir & "\" & ProjectName & vbCrLf)
+            '        Else
+            '            System.IO.Compression.ZipFile.ExtractToDirectory(FileName, ParentDir & "\" & ProjectName)
+            '        End If
+            '    End If
+            'Catch ex As Exception
+            '    Message.AddWarning("Error opening Archived Andorville Project: " & ex.Message & vbCrLf)
+            'End Try
+        End If
+    End Sub
+
+    Private Sub OpenArchivedProject(ByVal FilePath As String)
+        'Open the archived project at the specified path.
+
+        Dim Zip As System.IO.Compression.ZipArchive
+        Try
+            Zip = System.IO.Compression.ZipFile.OpenRead(FilePath)
+
+            Dim Entry As System.IO.Compression.ZipArchiveEntry = Zip.GetEntry("Project_Info_ADVL_2.xml")
+            If IsNothing(Entry) Then
+                Message.AddWarning("The file is not an Archived Andorville Project." & vbCrLf)
+                'Check if it is an Archive project type with a .AdvlProject extension.
+                'NOTE: the Archive project type, with the .AdvlProject extension may be deprecated. (Note these are already zip files so no need to archive.)
+                'Hybrid projects are the preferred type.
+
+            Else
+                Message.Add("The file is an Archived Andorville Project." & vbCrLf)
+                Dim ParentDir As String = System.IO.Directory.GetParent(FilePath).FullName
+                Dim ProjectName As String = System.IO.Path.GetFileNameWithoutExtension(FilePath)
+                Message.Add("The Project will be expanded in the directory: " & ParentDir & vbCrLf)
+                Message.Add("The Project name will be: " & ProjectName & vbCrLf)
+                Zip.Dispose()
+                If System.IO.Directory.Exists(ParentDir & "\" & ProjectName) Then
+                    Message.AddWarning("The Project already exists: " & ParentDir & "\" & ProjectName & vbCrLf)
+                Else
+                    System.IO.Compression.ZipFile.ExtractToDirectory(FilePath, ParentDir & "\" & ProjectName) 'Extract the project from the archive
+                    'AddProjectToList(ParentDir & "\" & ProjectName) 'Add the project to the list
+                    Project.AddProjectToList(ParentDir & "\" & ProjectName) 'UPDATED CODE 12May21
+                    'Open the project
+                    'Project_Closing() 'Close the current project
+                    CloseProject()  'Close the current project
+                    Project.SelectProject(ParentDir & "\" & ProjectName) 'Select the project at the specifed path.
+                    OpenProject() 'Open the selected project.
+                End If
+            End If
+        Catch ex As Exception
+            Message.AddWarning("Error opening Archived Andorville Project: " & ex.Message & vbCrLf)
+        End Try
+
+    End Sub
+
+    'REMOVE: THIS CODE IS NOW IN The Project class:
+    'Private Sub AddProjectToList(ByVal ProjectPath As String)
+    '    'Add the Project at ProjectPath to the Project List.
+
+    '    Dim ProjectInfoXDoc As System.Xml.Linq.XDocument = XDocument.Load(ProjectPath & "\Project_Info_ADVL_2.xml")
+    '    Dim ProjectSummary As New ADVL_Utilities_Library_1.ProjectSummary
+
+    '    If ProjectInfoXDoc Is Nothing Then
+    '        Message.AddWarning("No project information was found. The project was not added to the list." & vbCrLf)
+    '    Else
+    '        If ProjectInfoXDoc.<Project>.<Application>.<Name>.Value <> ApplicationInfo.Name Then
+    '            Message.AddWarning("The Project Application Name is: " & ProjectInfoXDoc.<Project>.<Application>.<Name>.Value & vbCrLf)
+    '            Message.AddWarning("This does not match the current Application Name: " & ApplicationInfo.Name & vbCrLf)
+    '        Else
+    '            Select Case ProjectInfoXDoc.<Project>.<Type>.Value
+    '                Case "Directory"
+    '                    ProjectSummary.AuthorName = ProjectInfoXDoc.<Project>.<Author>.<Name>.Value
+    '                    ProjectSummary.CreationDate = ProjectInfoXDoc.<Project>.<CreationDate>.Value
+    '                    ProjectSummary.Description = ProjectInfoXDoc.<Project>.<Description>.Value
+    '                    ProjectSummary.Name = ProjectInfoXDoc.<Project>.<Name>.Value
+    '                    ProjectSummary.Path = ProjectPath
+    '                    ProjectSummary.Type = Project.Types.Directory
+    '                    AddProject(ProjectSummary)
+
+    '                Case "Hybrid"
+    '                    ProjectSummary.AuthorName = ProjectInfoXDoc.<Project>.<Author>.<Name>.Value
+    '                    ProjectSummary.CreationDate = ProjectInfoXDoc.<Project>.<CreationDate>.Value
+    '                    ProjectSummary.Description = ProjectInfoXDoc.<Project>.<Description>.Value
+    '                    ProjectSummary.Name = ProjectInfoXDoc.<Project>.<Name>.Value
+    '                    ProjectSummary.Path = ProjectPath
+    '                    ProjectSummary.Type = Project.Types.Hybrid
+    '                    AddProject(ProjectSummary)
+
+    '                Case Else
+
+    '            End Select
+    '        End If
+    '    End If
+    'End Sub
+
+
+    'REMOVE: THIS CODE IS NOW IN The Project class:
+    'Private Sub AddProject(ByRef Summary As ADVL_Utilities_Library_1.ProjectSummary)
+    '    'Add the Project summary information to the project list.
+
+    '    Dim ProjectList As New List(Of ADVL_Utilities_Library_1.ProjectSummary) 'List of projects
+
+    '    'Read the Project list:
+    '    If System.IO.File.Exists(ApplicationInfo.ApplicationDir & "\Project_List_ADVL_2.xml") Then 'The latest ADVL_2 format version of the Project List file exists.
+    '        Dim ProjectListXDoc As System.Xml.Linq.XDocument = XDocument.Load(ApplicationInfo.ApplicationDir & "\Project_List_ADVL_2.xml")
+    '        'ReadProjectListAdvl_2(ProjectListXDoc)
+    '        Dim Projects = From item In ProjectListXDoc.<ProjectList>.<Project>
+    '        For Each item In Projects
+    '            Dim NewProject As New ADVL_Utilities_Library_1.ProjectSummary
+    '            NewProject.Name = item.<Name>.Value
+    '            NewProject.Description = item.<Description>.Value
+    '            Select Case item.<Type>.Value
+    '                Case "None"
+    '                    NewProject.Type = Project.Types.None
+    '                Case "Directory"
+    '                    NewProject.Type = Project.Types.Directory
+    '                Case "Archive"
+    '                    NewProject.Type = Project.Types.Archive
+    '                Case "Hybrid"
+    '                    NewProject.Type = Project.Types.Hybrid
+    '            End Select
+    '            NewProject.Path = item.<Path>.Value
+    '            NewProject.CreationDate = item.<CreationDate>.Value
+    '            NewProject.AuthorName = item.<AuthorName>.Value
+    '            If item.<Status>.Value = Nothing Then
+    '                'The Project list file records do not contain the Status field.
+    '            Else
+    '                NewProject.Status = item.<Status>.Value
+    '            End If
+    '            ProjectList.Add(NewProject)
+    '        Next
+
+    '        'Add the new project to the list:
+    '        ProjectList.Add(Summary)
+
+    '        'Write the Project list:
+    '        Dim UpdatedProjectListXDoc = <?xml version="1.0" encoding="utf-8"?>
+    '                                     <!---->
+    '                                     <!--Project List File-->
+    '                                     <ProjectList>
+    '                                         <FormatCode>ADVL_2</FormatCode>
+    '                                         <ApplicationName><%= ApplicationInfo.Name %></ApplicationName>
+    '                                         <%= From item In ProjectList
+    '                                             Select
+    '                                      <Project>
+    '                                          <Name><%= item.Name %></Name>
+    '                                          <Description><%= item.Description %></Description>
+    '                                          <Type><%= item.Type %></Type>
+    '                                          <Path><%= item.Path %></Path>
+    '                                          <CreationDate><%= Format(item.CreationDate, "d-MMM-yyyy H:mm:ss") %></CreationDate>
+    '                                          <AuthorName><%= item.AuthorName %></AuthorName>
+    '                                          <Status><%= item.Status %></Status>
+    '                                      </Project>
+    '                                         %>
+    '                                     </ProjectList>
+
+    '        UpdatedProjectListXDoc.Save(ApplicationInfo.ApplicationDir & "\Project_List_ADVL_2.xml")
+    '    Else
+    '        Message.AddWarning("The project list was not found. The project was not added." & vbCrLf)
+    '    End If
+    'End Sub
+
+
 
 
 #Region " Process XMessages" '===========================================================================================================================================
@@ -4043,15 +4525,25 @@ Public Class Main
                         Message.SettingsLocn = Project.SettingsLocn 'Set up the Message object
                         Message.Show() 'Added 18May19
 
-                        txtTotalDuration.Text = Project.Usage.TotalDuration.Days.ToString.PadLeft(5, "0"c) & ":" &
-                                      Project.Usage.TotalDuration.Hours.ToString.PadLeft(2, "0"c) & ":" &
-                                      Project.Usage.TotalDuration.Minutes.ToString.PadLeft(2, "0"c) & ":" &
-                                      Project.Usage.TotalDuration.Seconds.ToString.PadLeft(2, "0"c)
+                        'txtTotalDuration.Text = Project.Usage.TotalDuration.Days.ToString.PadLeft(5, "0"c) & ":" &
+                        '              Project.Usage.TotalDuration.Hours.ToString.PadLeft(2, "0"c) & ":" &
+                        '              Project.Usage.TotalDuration.Minutes.ToString.PadLeft(2, "0"c) & ":" &
+                        '              Project.Usage.TotalDuration.Seconds.ToString.PadLeft(2, "0"c)
 
-                        txtCurrentDuration.Text = Project.Usage.CurrentDuration.Days.ToString.PadLeft(5, "0"c) & ":" &
-                                       Project.Usage.CurrentDuration.Hours.ToString.PadLeft(2, "0"c) & ":" &
-                                       Project.Usage.CurrentDuration.Minutes.ToString.PadLeft(2, "0"c) & ":" &
-                                       Project.Usage.CurrentDuration.Seconds.ToString.PadLeft(2, "0"c)
+                        'txtCurrentDuration.Text = Project.Usage.CurrentDuration.Days.ToString.PadLeft(5, "0"c) & ":" &
+                        '               Project.Usage.CurrentDuration.Hours.ToString.PadLeft(2, "0"c) & ":" &
+                        '               Project.Usage.CurrentDuration.Minutes.ToString.PadLeft(2, "0"c) & ":" &
+                        '               Project.Usage.CurrentDuration.Seconds.ToString.PadLeft(2, "0"c)
+
+                        txtTotalDuration.Text = Project.Usage.TotalDuration.Days.ToString.PadLeft(5, "0"c) & "d:" &
+                                        Project.Usage.TotalDuration.Hours.ToString.PadLeft(2, "0"c) & "h:" &
+                                        Project.Usage.TotalDuration.Minutes.ToString.PadLeft(2, "0"c) & "m:" &
+                                        Project.Usage.TotalDuration.Seconds.ToString.PadLeft(2, "0"c) & "s"
+
+                        txtCurrentDuration.Text = Project.Usage.CurrentDuration.Days.ToString.PadLeft(5, "0"c) & "d:" &
+                                       Project.Usage.CurrentDuration.Hours.ToString.PadLeft(2, "0"c) & "h:" &
+                                       Project.Usage.CurrentDuration.Minutes.ToString.PadLeft(2, "0"c) & "m:" &
+                                       Project.Usage.CurrentDuration.Seconds.ToString.PadLeft(2, "0"c) & "s"
 
                     Else
                         ProjectSelected = False 'Project could not be opened.
@@ -4796,7 +5288,12 @@ Public Class Main
     Private Sub btnOpenMCModel_Click(sender As Object, e As EventArgs) Handles btnOpenMCModel.Click
         'Open a Monte Carlo model.
         Dim FileName As String = Project.SelectDataFile("Monte Carlo files", "MonteCarlo")
-        OpenMCModel(FileName)
+        If FileName = "" Then
+            'No file has been selected.
+        Else
+            OpenMCModel(FileName)
+        End If
+
     End Sub
 
     Private Sub OpenMCModel(ByVal FileName As String)
@@ -6167,7 +6664,7 @@ Public Class Main
                             Message.Add("Monte Carlo simulation complete." & vbCrLf)
 
                             Dim Duration As TimeSpan = Now - StartTime
-                            Message.Add("Time taken: " & Duration.TotalMilliseconds & " ms" & vbCrLf)
+                            Message.Add("Time taken: " & Duration.TotalMilliseconds & " ms" & vbCrLf & vbCrLf)
 
                         Else
                             Message.AddWarning("Output Value node information not found for at least one Output Value: " & vbCrLf)
@@ -6941,6 +7438,7 @@ Public Class Main
 
     Public Sub ShowRVTableSettings(ByVal ItemNo As Integer)
         'Show the Random Variable table settings for ItemNo.
+        If ItemNo = -1 Then Exit Sub
         If ItemNo < MonteCarlo.DataInfo.Count Then
             txtRVColNo.Text = MonteCarlo.DataInfo(ItemNo).ColumnNo
             txtRVFormat.Text = MonteCarlo.DataInfo(ItemNo).Format
@@ -14774,7 +15272,7 @@ Public Class Main
     Private Sub btnShuffleCol_Click(sender As Object, e As EventArgs) Handles btnShuffleCol.Click
         'Shuffle the selected column
         If cmbSortTable.SelectedIndex = -1 Then
-            Message.AddWarning("Select a table to sort." & vbCrLf)
+            Message.AddWarning("Select a table." & vbCrLf)
             Exit Sub
         End If
 
@@ -14791,6 +15289,23 @@ Public Class Main
     End Sub
 
     Private Sub btnDeleteCol_Click(sender As Object, e As EventArgs) Handles btnDeleteCol.Click
+        'Delete the selected column
+
+        If cmbSortTable.SelectedIndex = -1 Then
+            Message.AddWarning("Select a table." & vbCrLf)
+            Exit Sub
+        End If
+
+        If cmbSortColumn.SelectedIndex = -1 Then
+            Message.AddWarning("Select a column to delete." & vbCrLf)
+            Exit Sub
+        End If
+
+        Dim TableName As String = cmbSortTable.SelectedItem.ToString
+        Dim ColName As String = cmbSortColumn.SelectedItem.ToString
+
+        MonteCarlo.Data.Tables(TableName).Columns.Remove(ColName)
+
 
     End Sub
 
@@ -14829,6 +15344,35 @@ Public Class Main
         End If
 
 
+    End Sub
+
+    Private Sub btnClearTableData_Click(sender As Object, e As EventArgs) Handles btnClearTableData.Click
+        'Clear the data in a table
+
+        If cmbDeleteTable.SelectedIndex = -1 Then
+            Message.AddWarning("Select a table to delete." & vbCrLf)
+            Exit Sub
+        End If
+
+        Dim TableName As String = cmbDeleteTable.SelectedItem.ToString
+        If MonteCarlo.Data.Tables.Contains(TableName) Then
+            MonteCarlo.Data.Tables(TableName).Rows.Clear()
+        End If
+
+    End Sub
+
+    Private Sub btnClearColumns_Click(sender As Object, e As EventArgs) Handles btnClearColumns.Click
+        'Clear the columns in a table
+
+        If cmbDeleteTable.SelectedIndex = -1 Then
+            Message.AddWarning("Select a table to delete." & vbCrLf)
+            Exit Sub
+        End If
+
+        Dim TableName As String = cmbDeleteTable.SelectedItem.ToString
+        If MonteCarlo.Data.Tables.Contains(TableName) Then
+            MonteCarlo.Data.Tables(TableName).Columns.Clear()
+        End If
     End Sub
 
     Private Sub cmbCopyDataFromTable_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cmbCopyDataFromTable.SelectedIndexChanged
@@ -14925,6 +15469,7 @@ Public Class Main
 #End Region 'Monte Carlo Methods --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
+
 #End Region 'Form Methods ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
@@ -14948,34 +15493,9 @@ Public Class Main
         Public Locn As String 'The location to send the information.
     End Class
 
+    Private Sub txtCorrMatrixFormat_TextChanged(sender As Object, e As EventArgs) Handles txtCorrMatrixFormat.TextChanged
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    End Sub
 
 
 

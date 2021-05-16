@@ -3170,145 +3170,152 @@
 
         If RowNo = -1 Then Exit Sub
 
-        SeriesInfo(RowNo).<Name>.Value = DataGridView1.Rows(RowNo).Cells(0).Value
-        myChart.Series(RowNo).Name = DataGridView1.Rows(RowNo).Cells(0).Value
+        Try
 
-        SeriesInfo(RowNo).<ChartType>.Value = DataGridView1.Rows(RowNo).Cells(1).Value
-        Select Case DataGridView1.Rows(RowNo).Cells(1).Value
-            Case "Line"
-                myChart.Series(RowNo).ChartType = DataVisualization.Charting.SeriesChartType.Line
-            Case "Point"
-                myChart.Series(RowNo).ChartType = DataVisualization.Charting.SeriesChartType.Point
-            Case "Bar"
-                myChart.Series(RowNo).ChartType = DataVisualization.Charting.SeriesChartType.Bar
-            Case "Column"
-                myChart.Series(RowNo).ChartType = DataVisualization.Charting.SeriesChartType.Column
-        End Select
-        myChart.Series(RowNo).ChartArea = DataGridView1.Rows(RowNo).Cells(2).Value
-        SeriesInfo(RowNo).<ChartArea>.Value = DataGridView1.Rows(RowNo).Cells(2).Value
 
-        If SeriesInfo(RowNo).<XFieldName>.Value = DataGridView1.Rows(RowNo).Cells(3).Value Then
-            'The X Field Name has not been changed.
-        Else
-            Dim FieldName As String = DataGridView1.Rows(RowNo).Cells(3).Value
-            SeriesInfo(RowNo).<XFieldName>.Value = FieldName
-            'Update XMin and XMax:
-            Dim AreaName As String = SeriesInfo(RowNo).<ChartArea>.Value
-            For Each item In AreaInfo
-                If item.<Name>.Value = AreaName Then
-                    Dim Min As Single = Main.MonteCarlo.Data.Tables("Calculations").Compute("Min(" & FieldName & ")", "")
-                    Dim Max As Single = Main.MonteCarlo.Data.Tables("Calculations").Compute("Max(" & FieldName & ")", "")
-                    Dim NIntervals As Integer = 5
-                    Dim RawInterval As Double = (Max - Min) / NIntervals 'First calculate the Raw Interval
-                    Dim PrefInterval As Double = PreferredInterval(RawInterval)
-                    Dim PrefMin As Double = Math.Floor(Min / PrefInterval) * PrefInterval
-                    Dim PrefMax As Double = Math.Ceiling(Max / PrefInterval) * PrefInterval
+            SeriesInfo(RowNo).<Name>.Value = DataGridView1.Rows(RowNo).Cells(0).Value
+            myChart.Series(RowNo).Name = DataGridView1.Rows(RowNo).Cells(0).Value
 
-                    item.<AxisX>.<Minimum>.Value = PrefMin
-                    myChart.ChartAreas(AreaName).AxisX.Minimum = PrefMin
+            SeriesInfo(RowNo).<ChartType>.Value = DataGridView1.Rows(RowNo).Cells(1).Value
+            Select Case DataGridView1.Rows(RowNo).Cells(1).Value
+                Case "Line"
+                    myChart.Series(RowNo).ChartType = DataVisualization.Charting.SeriesChartType.Line
+                Case "Point"
+                    myChart.Series(RowNo).ChartType = DataVisualization.Charting.SeriesChartType.Point
+                Case "Bar"
+                    myChart.Series(RowNo).ChartType = DataVisualization.Charting.SeriesChartType.Bar
+                Case "Column"
+                    myChart.Series(RowNo).ChartType = DataVisualization.Charting.SeriesChartType.Column
+            End Select
+            myChart.Series(RowNo).ChartArea = DataGridView1.Rows(RowNo).Cells(2).Value
+            SeriesInfo(RowNo).<ChartArea>.Value = DataGridView1.Rows(RowNo).Cells(2).Value
 
-                    item.<AxisX>.<Maximum>.Value = PrefMax
-                    myChart.ChartAreas(AreaName).AxisX.Maximum = PrefMax
-                    item.<AxisX>.<Interval>.Value = PrefInterval
-                    item.<AxisX>.<AutoInterval>.Value = "false"
-                    myChart.ChartAreas(AreaName).AxisX.Interval = PrefInterval
-                    item.<AxisX>.<Title>.<Text>.Value = FieldName
-                    myChart.ChartAreas(AreaName).AxisX.Title = FieldName
-                    Exit For
-                End If
-            Next
-        End If
+            If SeriesInfo(RowNo).<XFieldName>.Value = DataGridView1.Rows(RowNo).Cells(3).Value Then
+                'The X Field Name has not been changed.
+            Else
+                Dim FieldName As String = DataGridView1.Rows(RowNo).Cells(3).Value
+                SeriesInfo(RowNo).<XFieldName>.Value = FieldName
+                'Update XMin and XMax:
+                Dim AreaName As String = SeriesInfo(RowNo).<ChartArea>.Value
+                For Each item In AreaInfo
+                    If item.<Name>.Value = AreaName Then
+                        Dim Min As Single = Main.MonteCarlo.Data.Tables("Calculations").Compute("Min(" & FieldName & ")", "")
+                        Dim Max As Single = Main.MonteCarlo.Data.Tables("Calculations").Compute("Max(" & FieldName & ")", "")
+                        Dim NIntervals As Integer = 5
+                        Dim RawInterval As Double = (Max - Min) / NIntervals 'First calculate the Raw Interval
+                        Dim PrefInterval As Double = PreferredInterval(RawInterval)
+                        Dim PrefMin As Double = Math.Floor(Min / PrefInterval) * PrefInterval
+                        Dim PrefMax As Double = Math.Ceiling(Max / PrefInterval) * PrefInterval
 
-        SeriesInfo(RowNo).<XAxisType>.Value = DataGridView1.Rows(RowNo).Cells(4).Value
-        If DataGridView1.Rows(RowNo).Cells(4).Value = "Primary" Then
-            myChart.Series(RowNo).XAxisType = DataVisualization.Charting.AxisType.Primary
-        ElseIf DataGridView1.Rows(RowNo).Cells(4).Value = "Secondary" Then
-            myChart.Series(RowNo).XAxisType = DataVisualization.Charting.AxisType.Secondary
-        Else
-            Main.Message.AddWarning("Unknown X Axis type specified: " & DataGridView1.Rows(RowNo).Cells(4).Value & vbCrLf)
-        End If
+                        item.<AxisX>.<Minimum>.Value = PrefMin
+                        myChart.ChartAreas(AreaName).AxisX.Minimum = PrefMin
 
-        SeriesInfo(RowNo).<XValueType>.Value = DataGridView1.Rows(RowNo).Cells(5).Value
+                        item.<AxisX>.<Maximum>.Value = PrefMax
+                        myChart.ChartAreas(AreaName).AxisX.Maximum = PrefMax
+                        item.<AxisX>.<Interval>.Value = PrefInterval
+                        item.<AxisX>.<AutoInterval>.Value = "false"
+                        myChart.ChartAreas(AreaName).AxisX.Interval = PrefInterval
+                        item.<AxisX>.<Title>.<Text>.Value = FieldName
+                        myChart.ChartAreas(AreaName).AxisX.Title = FieldName
+                        Exit For
+                    End If
+                Next
+            End If
 
-        If DataGridView1.Rows(RowNo).Cells(5).Value <> Nothing Then myChart.Series(RowNo).XValueType = [Enum].Parse(GetType(DataVisualization.Charting.ChartValueType), DataGridView1.Rows(RowNo).Cells(5).Value)
+            SeriesInfo(RowNo).<XAxisType>.Value = DataGridView1.Rows(RowNo).Cells(4).Value
+            If DataGridView1.Rows(RowNo).Cells(4).Value = "Primary" Then
+                myChart.Series(RowNo).XAxisType = DataVisualization.Charting.AxisType.Primary
+            ElseIf DataGridView1.Rows(RowNo).Cells(4).Value = "Secondary" Then
+                myChart.Series(RowNo).XAxisType = DataVisualization.Charting.AxisType.Secondary
+            Else
+                Main.Message.AddWarning("Unknown X Axis type specified: " & DataGridView1.Rows(RowNo).Cells(4).Value & vbCrLf)
+            End If
 
-        If SeriesInfo(RowNo).<YFieldName>.Value = DataGridView1.Rows(RowNo).Cells(6).Value Then
-            'The Y Field Name has not been changed.
-        Else
-            Dim FieldName As String = DataGridView1.Rows(RowNo).Cells(6).Value
-            SeriesInfo(RowNo).<YFieldName>.Value = FieldName
-            'Update XMin and XMax:
-            Dim AreaName As String = SeriesInfo(RowNo).<ChartArea>.Value
-            For Each item In AreaInfo
-                If item.<Name>.Value = AreaName Then
-                    Dim Min As Single = Main.MonteCarlo.Data.Tables("Calculations").Compute("Min(" & FieldName & ")", "")
-                    Dim Max As Single = Main.MonteCarlo.Data.Tables("Calculations").Compute("Max(" & FieldName & ")", "")
-                    Dim NIntervals As Integer = 5
-                    Dim RawInterval As Double = (Max - Min) / NIntervals 'First calculate the Raw Interval
-                    Dim PrefInterval As Double = PreferredInterval(RawInterval)
-                    Dim PrefMin As Double = Math.Floor(Min / PrefInterval) * PrefInterval
-                    Dim PrefMax As Double = Math.Ceiling(Max / PrefInterval) * PrefInterval
+            SeriesInfo(RowNo).<XValueType>.Value = DataGridView1.Rows(RowNo).Cells(5).Value
 
-                    item.<AxisY>.<Minimum>.Value = PrefMin
-                    myChart.ChartAreas(AreaName).AxisY.Minimum = PrefMin
-                    item.<AxisY>.<Maximum>.Value = PrefMax
-                    myChart.ChartAreas(AreaName).AxisY.Maximum = PrefMax
-                    item.<AxisY>.<Interval>.Value = PrefInterval
-                    item.<AxisY>.<AutoInterval>.Value = "false"
-                    myChart.ChartAreas(AreaName).AxisY.Interval = PrefInterval
-                    item.<AxisY>.<Title>.<Text>.Value = FieldName
-                    myChart.ChartAreas(AreaName).AxisY.Title = FieldName
-                    Exit For
-                End If
-            Next
-        End If
+            If DataGridView1.Rows(RowNo).Cells(5).Value <> Nothing Then myChart.Series(RowNo).XValueType = [Enum].Parse(GetType(DataVisualization.Charting.ChartValueType), DataGridView1.Rows(RowNo).Cells(5).Value)
 
-        SeriesInfo(RowNo).<YAxisType>.Value = DataGridView1.Rows(RowNo).Cells(7).Value
-        If DataGridView1.Rows(RowNo).Cells(7).Value = "Primary" Then
-            myChart.Series(RowNo).YAxisType = DataVisualization.Charting.AxisType.Primary
-        ElseIf DataGridView1.Rows(RowNo).Cells(7).Value = "Secondary" Then
-            myChart.Series(RowNo).YAxisType = DataVisualization.Charting.AxisType.Secondary
-        Else
-            Main.Message.AddWarning("Unknown Y Axis type specified: " & DataGridView1.Rows(RowNo).Cells(7).Value & vbCrLf)
-        End If
+            If SeriesInfo(RowNo).<YFieldName>.Value = DataGridView1.Rows(RowNo).Cells(6).Value Then
+                'The Y Field Name has not been changed.
+            Else
+                Dim FieldName As String = DataGridView1.Rows(RowNo).Cells(6).Value
+                SeriesInfo(RowNo).<YFieldName>.Value = FieldName
+                'Update XMin and XMax:
+                Dim AreaName As String = SeriesInfo(RowNo).<ChartArea>.Value
+                For Each item In AreaInfo
+                    If item.<Name>.Value = AreaName Then
+                        Dim Min As Single = Main.MonteCarlo.Data.Tables("Calculations").Compute("Min(" & FieldName & ")", "")
+                        Dim Max As Single = Main.MonteCarlo.Data.Tables("Calculations").Compute("Max(" & FieldName & ")", "")
+                        Dim NIntervals As Integer = 5
+                        Dim RawInterval As Double = (Max - Min) / NIntervals 'First calculate the Raw Interval
+                        Dim PrefInterval As Double = PreferredInterval(RawInterval)
+                        Dim PrefMin As Double = Math.Floor(Min / PrefInterval) * PrefInterval
+                        Dim PrefMax As Double = Math.Ceiling(Max / PrefInterval) * PrefInterval
 
-        SeriesInfo(RowNo).<YValueType>.Value = DataGridView1.Rows(RowNo).Cells(8).Value
+                        item.<AxisY>.<Minimum>.Value = PrefMin
+                        myChart.ChartAreas(AreaName).AxisY.Minimum = PrefMin
+                        item.<AxisY>.<Maximum>.Value = PrefMax
+                        myChart.ChartAreas(AreaName).AxisY.Maximum = PrefMax
+                        item.<AxisY>.<Interval>.Value = PrefInterval
+                        item.<AxisY>.<AutoInterval>.Value = "false"
+                        myChart.ChartAreas(AreaName).AxisY.Interval = PrefInterval
+                        item.<AxisY>.<Title>.<Text>.Value = FieldName
+                        myChart.ChartAreas(AreaName).AxisY.Title = FieldName
+                        Exit For
+                    End If
+                Next
+            End If
 
-        If DataGridView1.Rows(RowNo).Cells(8).Value <> Nothing Then myChart.Series(RowNo).YValueType = [Enum].Parse(GetType(DataVisualization.Charting.ChartValueType), DataGridView1.Rows(RowNo).Cells(8).Value)
+            SeriesInfo(RowNo).<YAxisType>.Value = DataGridView1.Rows(RowNo).Cells(7).Value
+            If DataGridView1.Rows(RowNo).Cells(7).Value = "Primary" Then
+                myChart.Series(RowNo).YAxisType = DataVisualization.Charting.AxisType.Primary
+            ElseIf DataGridView1.Rows(RowNo).Cells(7).Value = "Secondary" Then
+                myChart.Series(RowNo).YAxisType = DataVisualization.Charting.AxisType.Secondary
+            Else
+                Main.Message.AddWarning("Unknown Y Axis type specified: " & DataGridView1.Rows(RowNo).Cells(7).Value & vbCrLf)
+            End If
 
-        myChart.ChartAreas(0).AxisY.IntervalAutoMode = DataVisualization.Charting.IntervalAutoMode.VariableCount 'ADDED 23Jul20
+            SeriesInfo(RowNo).<YValueType>.Value = DataGridView1.Rows(RowNo).Cells(8).Value
 
-        SeriesInfo(RowNo).<Marker>.<Fill>.Value = DataGridView1.Rows(RowNo).Cells(9).Value
-        SeriesInfo(RowNo).<Marker>.<Color>.Value = DataGridView1.Rows(RowNo).Cells(10).Style.BackColor.ToArgb.ToString
-        If DataGridView1.Rows(RowNo).Cells(9).Value = "Yes" Then
-            myChart.Series(RowNo).MarkerColor = DataGridView1.Rows(RowNo).Cells(10).Style.BackColor
-        Else
-            myChart.Series(RowNo).MarkerColor = Color.Transparent
-        End If
+            If DataGridView1.Rows(RowNo).Cells(8).Value <> Nothing Then myChart.Series(RowNo).YValueType = [Enum].Parse(GetType(DataVisualization.Charting.ChartValueType), DataGridView1.Rows(RowNo).Cells(8).Value)
 
-        SeriesInfo(RowNo).<Marker>.<BorderColor>.Value = DataGridView1.Rows(RowNo).Cells(11).Style.BackColor.ToArgb.ToString
-        myChart.Series(RowNo).MarkerBorderColor = DataGridView1.Rows(RowNo).Cells(11).Style.BackColor
+            myChart.ChartAreas(0).AxisY.IntervalAutoMode = DataVisualization.Charting.IntervalAutoMode.VariableCount 'ADDED 23Jul20
 
-        SeriesInfo(RowNo).<Marker>.<BorderWidth>.Value = DataGridView1.Rows(RowNo).Cells(12).Value
-        myChart.Series(RowNo).MarkerBorderWidth = DataGridView1.Rows(RowNo).Cells(12).Value
+            SeriesInfo(RowNo).<Marker>.<Fill>.Value = DataGridView1.Rows(RowNo).Cells(9).Value
+            SeriesInfo(RowNo).<Marker>.<Color>.Value = DataGridView1.Rows(RowNo).Cells(10).Style.BackColor.ToArgb.ToString
+            If DataGridView1.Rows(RowNo).Cells(9).Value = "Yes" Then
+                myChart.Series(RowNo).MarkerColor = DataGridView1.Rows(RowNo).Cells(10).Style.BackColor
+            Else
+                myChart.Series(RowNo).MarkerColor = Color.Transparent
+            End If
 
-        SeriesInfo(RowNo).<Marker>.<Style>.Value = DataGridView1.Rows(RowNo).Cells(13).Value
-        If DataGridView1.Rows(RowNo).Cells(13).Value <> Nothing Then myChart.Series(RowNo).MarkerStyle = [Enum].Parse(GetType(DataVisualization.Charting.MarkerStyle), DataGridView1.Rows(RowNo).Cells(13).Value)
+            SeriesInfo(RowNo).<Marker>.<BorderColor>.Value = DataGridView1.Rows(RowNo).Cells(11).Style.BackColor.ToArgb.ToString
+            myChart.Series(RowNo).MarkerBorderColor = DataGridView1.Rows(RowNo).Cells(11).Style.BackColor
 
-        SeriesInfo(RowNo).<Marker>.<Size>.Value = DataGridView1.Rows(RowNo).Cells(14).Value
-        myChart.Series(RowNo).MarkerSize = DataGridView1.Rows(RowNo).Cells(14).Value
+            SeriesInfo(RowNo).<Marker>.<BorderWidth>.Value = DataGridView1.Rows(RowNo).Cells(12).Value
+            myChart.Series(RowNo).MarkerBorderWidth = DataGridView1.Rows(RowNo).Cells(12).Value
 
-        SeriesInfo(RowNo).<Marker>.<Step>.Value = DataGridView1.Rows(RowNo).Cells(15).Value
-        myChart.Series(RowNo).MarkerStep = DataGridView1.Rows(RowNo).Cells(15).Value
+            SeriesInfo(RowNo).<Marker>.<Style>.Value = DataGridView1.Rows(RowNo).Cells(13).Value
+            If DataGridView1.Rows(RowNo).Cells(13).Value <> Nothing Then myChart.Series(RowNo).MarkerStyle = [Enum].Parse(GetType(DataVisualization.Charting.MarkerStyle), DataGridView1.Rows(RowNo).Cells(13).Value)
 
-        SeriesInfo(RowNo).<Color>.Value = DataGridView1.Rows(RowNo).Cells(16).Style.BackColor.ToArgb.ToString
-        myChart.Series(RowNo).Color = DataGridView1.Rows(RowNo).Cells(16).Style.BackColor
+            SeriesInfo(RowNo).<Marker>.<Size>.Value = DataGridView1.Rows(RowNo).Cells(14).Value
+            myChart.Series(RowNo).MarkerSize = DataGridView1.Rows(RowNo).Cells(14).Value
 
-        SeriesInfo(RowNo).<Width>.Value = DataGridView1.Rows(RowNo).Cells(17).Value
-        myChart.Series(RowNo).BorderWidth = DataGridView1.Rows(RowNo).Cells(17).Value
+            SeriesInfo(RowNo).<Marker>.<Step>.Value = DataGridView1.Rows(RowNo).Cells(15).Value
+            myChart.Series(RowNo).MarkerStep = DataGridView1.Rows(RowNo).Cells(15).Value
 
-        SeriesInfo(RowNo).<ToolTip>.Value = DataGridView1.Rows(RowNo).Cells(18).Value
-        myChart.Series(RowNo).ToolTip = DataGridView1.Rows(RowNo).Cells(18).Value
+            SeriesInfo(RowNo).<Color>.Value = DataGridView1.Rows(RowNo).Cells(16).Style.BackColor.ToArgb.ToString
+            myChart.Series(RowNo).Color = DataGridView1.Rows(RowNo).Cells(16).Style.BackColor
+
+            SeriesInfo(RowNo).<Width>.Value = DataGridView1.Rows(RowNo).Cells(17).Value
+            myChart.Series(RowNo).BorderWidth = DataGridView1.Rows(RowNo).Cells(17).Value
+
+            SeriesInfo(RowNo).<ToolTip>.Value = DataGridView1.Rows(RowNo).Cells(18).Value
+            myChart.Series(RowNo).ToolTip = DataGridView1.Rows(RowNo).Cells(18).Value
+
+        Catch ex As Exception
+            Main.Message.AddWarning("Error. Have you selected or created a new chart?" & vbCrLf)
+        End Try
     End Sub
 
     Private Sub txtChartTitle_TextChanged(sender As Object, e As EventArgs) Handles txtChartTitle.TextChanged

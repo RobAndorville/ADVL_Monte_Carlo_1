@@ -638,57 +638,173 @@
 
                 'Case "Beta"
                 Case "C2 - Beta"
+                    ParamA = DataInfo(IndexNo).ParameterAValue
+                    ParamB = DataInfo(IndexNo).ParameterBValue
+                    Seed = DataInfo(IndexNo).Seed
+                    'Updated Random code:
+                    If Seed = -1 Then
+                        myRandom = New Random 'This starts a new random sequence using a seed based on the time
+                    Else
+                        myRandom = New Random(Seed) 'This starts a new random sequence using the specified seed.
+                    End If
                     GenerateBetaData(TableName, ColumnName, DataInfo(IndexNo).Sampling)
 
                 'Case "Beta Scaled"
                 Case "C4 - Beta Scaled"
+                    ParamA = DataInfo(IndexNo).ParameterAValue
+                    ParamB = DataInfo(IndexNo).ParameterBValue
+                    ParamC = DataInfo(IndexNo).ParameterCValue
+                    ParamD = DataInfo(IndexNo).ParameterDValue
+                    Seed = DataInfo(IndexNo).Seed
+                    'Updated Random code:
+                    If Seed = -1 Then
+                        myRandom = New Random 'This starts a new random sequence using a seed based on the time
+                    Else
+                        myRandom = New Random(Seed) 'This starts a new random sequence using the specified seed.
+                    End If
                     GenerateBetaScaledData(TableName, ColumnName, DataInfo(IndexNo).Sampling)
 
                 'Case "Burr"
 
                 'Case "Cauchy"
                 Case "C2 - Cauchy"
+                    ParamA = DataInfo(IndexNo).ParameterAValue
+                    ParamB = DataInfo(IndexNo).ParameterBValue
+                    Seed = DataInfo(IndexNo).Seed
+                    'Updated Random code:
+                    If Seed = -1 Then
+                        myRandom = New Random 'This starts a new random sequence using a seed based on the time
+                    Else
+                        myRandom = New Random(Seed) 'This starts a new random sequence using the specified seed.
+                    End If
                     GenerateCauchyData(TableName, ColumnName, DataInfo(IndexNo).Sampling)
 
-                Case "Chi Squared"
+                'Case "Chi Squared"
+                Case "C1 - Chi Squared"
+                    GenerateChiSquaredData(TableName, ColumnName, DataInfo(IndexNo).Sampling)
 
-                Case "Continuous Uniform"
+                'Case "Continuous Uniform"
+                Case "C2 - Continuous Uniform"
+                    GenerateContUniformData(TableName, ColumnName, DataInfo(IndexNo).Sampling)
 
-                Case "Exponential"
+                'Case "Exponential"
+                Case "C1 - Exponential"
+                    GenerateExponentialData(TableName, ColumnName, DataInfo(IndexNo).Sampling)
 
-                Case "Fisher-Snedecor"
+                'Case "Fisher-Snedecor"
+                Case "C2 - Fisher-Snedecor"
+                    GenerateFisherSnedecorData(TableName, ColumnName, DataInfo(IndexNo).Sampling)
 
-                Case "Gamma"
+                'Case "Gamma"
+                Case "C2 - Gamma"
+                    GenerateGammaData(TableName, ColumnName, DataInfo(IndexNo).Sampling)
 
-                Case "Inverse Gaussian"
+                'Case "Inverse Gaussian"
+                Case "C2 - Inverse Gaussian"
+                  'NOTE: There appears to be an error in the Math.Net Inverse Gaussian InvCDF function!!!
 
                     'Case "Log Normal"
                 Case "C2 - Log Normal"
                     ParamA = DataInfo(IndexNo).ParameterAValue
                     ParamB = DataInfo(IndexNo).ParameterBValue
+                    Seed = DataInfo(IndexNo).Seed
+                    'Updated Random code:
+                    If Seed = -1 Then
+                        myRandom = New Random 'This starts a new random sequence using a seed based on the time
+                    Else
+                        myRandom = New Random(Seed) 'This starts a new random sequence using the specified seed.
+                    End If
                     GenerateLogNormalData(TableName, ColumnName, DataInfo(IndexNo).Sampling)
+
                     'Case "Normal"
                 Case "C2 - Normal"
                     ParamA = DataInfo(IndexNo).ParameterAValue
                     ParamB = DataInfo(IndexNo).ParameterBValue
+                    Seed = DataInfo(IndexNo).Seed
+                    'Updated Random code:
+                    If Seed = -1 Then
+                        myRandom = New Random 'This starts a new random sequence using a seed based on the time
+                    Else
+                        myRandom = New Random(Seed) 'This starts a new random sequence using the specified seed.
+                    End If
                     GenerateNormalData(TableName, ColumnName, DataInfo(IndexNo).Sampling)
-                Case "Pareto"
 
-                Case "Rayleigh"
+                'Case "Pareto"
+                Case "C2 - Pareto"
 
-                Case "Skewed Generalized Error"
 
-                Case "Skewed Generalized T"
+                'Case "Rayleigh"
+                Case "C1 - Rayleigh"
 
-                Case "Student's T"
+                'Case "Skewed Generalized Error"
+                Case "C4 - Skewed Generalized Error"
 
-                Case "Triangular"
 
-                Case "Truncated Pareto"
+                'Case "Skewed Generalized T"
+                Case "C5 - Skewed Generalized T"
+
+                'Case "Student's T"
+                Case "C3 - Student's T"
+
+                'Case "Triangular"
+                Case "C3 - Triangular"
+                    ParamA = DataInfo(IndexNo).ParameterAValue
+                    ParamB = DataInfo(IndexNo).ParameterBValue
+                    ParamC = DataInfo(IndexNo).ParameterCValue
+                    Seed = DataInfo(IndexNo).Seed
+                    'Updated Random code:
+                    If Seed = -1 Then
+                        myRandom = New Random 'This starts a new random sequence using a seed based on the time
+                    Else
+                        myRandom = New Random(Seed) 'This starts a new random sequence using the specified seed.
+                    End If
+                    GenerateTriangularData(TableName, ColumnName, DataInfo(IndexNo).Sampling)
+
+                'Case "Truncated Pareto"
+                Case "C3 - Truncated Pareto"
 
                 Case "D1 - Bernoulli"
                     ParamA = DataInfo(IndexNo).ParameterAValue
+                    Seed = DataInfo(IndexNo).Seed
+                    'Updated Random code:
+                    If Seed = -1 Then
+                        myRandom = New Random 'This starts a new random sequence using a seed based on the time
+                    Else
+                        myRandom = New Random(Seed) 'This starts a new random sequence using the specified seed.
+                    End If
                     GenerateBernoulliData(TableName, ColumnName, DataInfo(IndexNo).Sampling)
+
+                Case "D2 - Binomial"
+
+                'Case "D1 - Categorical" 'TO DO!
+
+
+                Case "D2 - Conway-Maxwell-Poisson"
+
+                Case "D2 - Discrete Uniform"
+
+                Case "D1 - Geometric"
+
+                Case "D3 - Hypergeometric"
+                    ParamA = DataInfo(IndexNo).ParameterAValue
+                    ParamB = DataInfo(IndexNo).ParameterBValue
+                    ParamC = DataInfo(IndexNo).ParameterCValue
+                    Seed = DataInfo(IndexNo).Seed
+                    'Updated Random code:
+                    If Seed = -1 Then
+                        myRandom = New Random 'This starts a new random sequence using a seed based on the time
+                    Else
+                        myRandom = New Random(Seed) 'This starts a new random sequence using the specified seed.
+                    End If
+                    GenerateHypergeometricData(TableName, ColumnName, DataInfo(IndexNo).Sampling)
+
+                Case "D2 - Negative Binomial"
+
+                Case "D1 - Poisson"
+
+                Case "D2 - Zipf"
+
+
 
                 Case Else
                     RaiseEvent ErrorMessage("Unknown data set type: " & DataSetType & vbCrLf)
@@ -699,6 +815,7 @@
     'Public Sub GenerateRandomVariableData()
     Public Sub GenerateData()
         'Generate the Random Variable data.
+        'Generates data for all the random variables and other data types specified in DataInfo()
 
         'Clear any existing Monte Carlo data:
         Data.Clear()
@@ -849,49 +966,62 @@
                         GenerateGammaData(TableName, ColumnName, DataInfo(I).Sampling)
 
                     Case "C2 - Inverse Gaussian"
+                         'NOTE: There appears to be an error in the Math.Net Inverse Gaussian InvCDF function!!!
 
                     Case "C2 - Log Normal"
+                        GenerateLogNormalData(TableName, ColumnName, DataInfo(I).Sampling)
 
                     Case "C2 - Normal"
                         GenerateNormalData(TableName, ColumnName, DataInfo(I).Sampling)
 
                     Case "C2 - Pareto"
+                        GenerateParetoData(TableName, ColumnName, DataInfo(I).Sampling)
 
                     Case "C1 - Rayleigh"
+                        GenerateRayleighData(TableName, ColumnName, DataInfo(I).Sampling)
 
                     Case "C4 - Skewed Generalized Error"
+                        GenerateSkewGenErrorData(TableName, ColumnName, DataInfo(I).Sampling)
 
                     Case "C5 - Skewed Generalized T"
+                        GenerateSkewGenTData(TableName, ColumnName, DataInfo(I).Sampling)
 
                     Case "C3 - Student's T"
+                        GenerateStudentsTData(TableName, ColumnName, DataInfo(I).Sampling)
 
                     Case "C3 - Triangular"
                         GenerateTriangularData(TableName, ColumnName, DataInfo(I).Sampling)
 
                     Case "C3 - Truncated Pareto"
-
+                         'NOTE: There appears to be an error in the Math.Net Truncated Pareto InvCDF function!!!
 
                     Case "D1 - Bernoulli"
                         GenerateBernoulliData(TableName, ColumnName, DataInfo(I).Sampling)
 
                     Case "D2 - Binomial"
+                        GenerateBinomialData(TableName, ColumnName, DataInfo(I).Sampling)
 
                    'Case "D1 - Categorical" 'TO DO!
 
                     Case "D2 - Conway-Maxwell-Poisson"
 
                     Case "D2 - Discrete Uniform"
+                        GenerateDiscreteUniformData(TableName, ColumnName, DataInfo(I).Sampling)
 
                     Case "D1 - Geometric"
+                        GenerateGeometricData(TableName, ColumnName, DataInfo(I).Sampling)
 
                     Case "D3 - Hypergeometric"
                         GenerateHypergeometricData(TableName, ColumnName, DataInfo(I).Sampling)
 
                     Case "D2 - Negative Binomial"
+                        GenerateNegativeBinomialData(TableName, ColumnName, DataInfo(I).Sampling)
 
                     Case "D1 - Poisson"
+                        GeneratePoissonData(TableName, ColumnName, DataInfo(I).Sampling)
 
                     Case "D2 - Zipf"
+                        GenerateZipfData(TableName, ColumnName, DataInfo(I).Sampling)
 
                     Case Else
                         RaiseEvent ErrorMessage("Unknown data set type: " & DataSetType & vbCrLf)
@@ -2811,6 +2941,7 @@
                 RaiseEvent ErrorMessage("Unknown sampling: " & Sampling & vbCrLf)
         End Select
     End Sub
+
     Private Sub GenerateNormalData(ByVal TableName As String, ByVal ColumnName As String, Sampling As String)
         'Generate Normal distribution data in the Specified Table and Column.
         'The Mean and Variance parameters are contained in the ParamA and ParamB variables.
@@ -4417,6 +4548,14 @@
     'End Sub
 
 
+    Private Sub GenerateConMaxPoissonData(ByVal TableName As String, ByVal ColumnName As String, Sampling As String)
+        'Generate Conway-Maxwell-Poisson distribution data in the Specified Table and Column.
+        'The lambda and rate of decay parameters are contained in the ParamA and ParamB variables.
+
+
+
+    End Sub
+
     Private Sub GenerateDiscreteUniformData(ByVal TableName As String, ByVal ColumnName As String, Sampling As String)
         'Generate Discrete Uniform distribution data in the Specified Table and Column.
         'The a and b parameters are contained in the ParamA and ParamB variables.
@@ -4717,16 +4856,17 @@
                     Next
                 Next
                 CovE(NVars - 1, NVars - 1) = 1
+                'CovE is the covariance of Intermediate Matrix M. (Matrix E)
 
                 Dim CholE = CovE.Cholesky 'The Cholesky factor of the Covariance matrix
-                Dim TransCholE = CholE.Factor.Transpose 'The Transpose Cholesky Factor of the Covariance matrix (Cholesky F)
-                Dim InvTransCholE = TransCholE.Inverse 'The inverse of Cholesky F
+                Dim TransCholE = CholE.Factor.Transpose 'The Transpose Cholesky Factor of the Covariance matrix. (Matrix F)
+                Dim InvTransCholE = TransCholE.Inverse 'The inverse of Matrix F
 
                 Dim TargetCorrS = MathNet.Numerics.LinearAlgebra.Double.Matrix.Build.DenseOfArray(Correlations(CorrMatName).Array)
                 Dim CholTargetCorrS = TargetCorrS.Cholesky.Factor
-                Dim TransCholTargetCorrS = CholTargetCorrS.Transpose
+                Dim TransCholTargetCorrS = CholTargetCorrS.Transpose '(Matrix C)
 
-                Dim RankingMatrix = InvTransCholE.Multiply(TransCholTargetCorrS)
+                Dim RankingMatrix = InvTransCholE.Multiply(TransCholTargetCorrS) 'Inverse Matrix F multipled with Matrix C
 
                 'Step 3: Generate the Intermediate Matrix T by multiplying the Score columns with the Ranking Matrix:
                 Dim NewRow(0 To NVars - 1) As Double 'Stores the new Score values for each row after mutiplication with the RankingMatrix.

@@ -389,6 +389,8 @@ Partial Class Main
         Me.cmbCopyColFromTable = New System.Windows.Forms.ComboBox()
         Me.Label18 = New System.Windows.Forms.Label()
         Me.GroupBox5 = New System.Windows.Forms.GroupBox()
+        Me.btnClearColumns = New System.Windows.Forms.Button()
+        Me.btnClearTableData = New System.Windows.Forms.Button()
         Me.btnCreateTable = New System.Windows.Forms.Button()
         Me.txtCreateTableName = New System.Windows.Forms.TextBox()
         Me.Label16 = New System.Windows.Forms.Label()
@@ -428,6 +430,9 @@ Partial Class Main
         Me.btnCopyCol = New System.Windows.Forms.Button()
         Me.cmbColumnToCopy = New System.Windows.Forms.ComboBox()
         Me.TabPage2 = New System.Windows.Forms.TabPage()
+        Me.btnOpenArchive = New System.Windows.Forms.Button()
+        Me.btnOpenParentDir = New System.Windows.Forms.Button()
+        Me.btnCreateArchive = New System.Windows.Forms.Button()
         Me.btnShowProjectInfo = New System.Windows.Forms.Button()
         Me.chkConnect = New System.Windows.Forms.CheckBox()
         Me.btnOpenProject = New System.Windows.Forms.Button()
@@ -436,8 +441,6 @@ Partial Class Main
         Me.txtProNetName = New System.Windows.Forms.TextBox()
         Me.Label9 = New System.Windows.Forms.Label()
         Me.btnOpenAppDir = New System.Windows.Forms.Button()
-        Me.Label7 = New System.Windows.Forms.Label()
-        Me.Label17 = New System.Windows.Forms.Label()
         Me.btnOpenSystem = New System.Windows.Forms.Button()
         Me.btnOpenData = New System.Windows.Forms.Button()
         Me.btnOpenSettings = New System.Windows.Forms.Button()
@@ -474,6 +477,7 @@ Partial Class Main
         Me.ImageList1 = New System.Windows.Forms.ImageList(Me.components)
         Me.btnAndorville = New System.Windows.Forms.Button()
         Me.ColorDialog1 = New System.Windows.Forms.ColorDialog()
+        Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
         Me.TabControl1.SuspendLayout()
         Me.TabPage3.SuspendLayout()
         Me.TabPage1.SuspendLayout()
@@ -4287,6 +4291,8 @@ Partial Class Main
         '
         'GroupBox5
         '
+        Me.GroupBox5.Controls.Add(Me.btnClearColumns)
+        Me.GroupBox5.Controls.Add(Me.btnClearTableData)
         Me.GroupBox5.Controls.Add(Me.btnCreateTable)
         Me.GroupBox5.Controls.Add(Me.txtCreateTableName)
         Me.GroupBox5.Controls.Add(Me.Label16)
@@ -4295,14 +4301,32 @@ Partial Class Main
         Me.GroupBox5.Controls.Add(Me.Label15)
         Me.GroupBox5.Location = New System.Drawing.Point(339, 145)
         Me.GroupBox5.Name = "GroupBox5"
-        Me.GroupBox5.Size = New System.Drawing.Size(295, 128)
+        Me.GroupBox5.Size = New System.Drawing.Size(352, 128)
         Me.GroupBox5.TabIndex = 191
         Me.GroupBox5.TabStop = False
         Me.GroupBox5.Text = "Create or Delete Table"
         '
+        'btnClearColumns
+        '
+        Me.btnClearColumns.Location = New System.Drawing.Point(101, 72)
+        Me.btnClearColumns.Name = "btnClearColumns"
+        Me.btnClearColumns.Size = New System.Drawing.Size(89, 22)
+        Me.btnClearColumns.TabIndex = 198
+        Me.btnClearColumns.Text = "Clear Columns"
+        Me.btnClearColumns.UseVisualStyleBackColor = True
+        '
+        'btnClearTableData
+        '
+        Me.btnClearTableData.Location = New System.Drawing.Point(196, 72)
+        Me.btnClearTableData.Name = "btnClearTableData"
+        Me.btnClearTableData.Size = New System.Drawing.Size(67, 22)
+        Me.btnClearTableData.TabIndex = 197
+        Me.btnClearTableData.Text = "Clear Data"
+        Me.btnClearTableData.UseVisualStyleBackColor = True
+        '
         'btnCreateTable
         '
-        Me.btnCreateTable.Location = New System.Drawing.Point(212, 13)
+        Me.btnCreateTable.Location = New System.Drawing.Point(269, 14)
         Me.btnCreateTable.Name = "btnCreateTable"
         Me.btnCreateTable.Size = New System.Drawing.Size(77, 22)
         Me.btnCreateTable.TabIndex = 196
@@ -4313,7 +4337,7 @@ Partial Class Main
         '
         Me.txtCreateTableName.Location = New System.Drawing.Point(10, 39)
         Me.txtCreateTableName.Name = "txtCreateTableName"
-        Me.txtCreateTableName.Size = New System.Drawing.Size(279, 20)
+        Me.txtCreateTableName.Size = New System.Drawing.Size(336, 20)
         Me.txtCreateTableName.TabIndex = 195
         '
         'Label16
@@ -4327,7 +4351,7 @@ Partial Class Main
         '
         'btnDeleteTable
         '
-        Me.btnDeleteTable.Location = New System.Drawing.Point(212, 72)
+        Me.btnDeleteTable.Location = New System.Drawing.Point(269, 72)
         Me.btnDeleteTable.Name = "btnDeleteTable"
         Me.btnDeleteTable.Size = New System.Drawing.Size(77, 22)
         Me.btnDeleteTable.TabIndex = 193
@@ -4339,7 +4363,7 @@ Partial Class Main
         Me.cmbDeleteTable.FormattingEnabled = True
         Me.cmbDeleteTable.Location = New System.Drawing.Point(9, 98)
         Me.cmbDeleteTable.Name = "cmbDeleteTable"
-        Me.cmbDeleteTable.Size = New System.Drawing.Size(279, 21)
+        Me.cmbDeleteTable.Size = New System.Drawing.Size(337, 21)
         Me.cmbDeleteTable.TabIndex = 187
         '
         'Label15
@@ -4364,7 +4388,7 @@ Partial Class Main
         Me.GroupBox4.Controls.Add(Me.Label61)
         Me.GroupBox4.Location = New System.Drawing.Point(339, 279)
         Me.GroupBox4.Name = "GroupBox4"
-        Me.GroupBox4.Size = New System.Drawing.Size(327, 159)
+        Me.GroupBox4.Size = New System.Drawing.Size(352, 159)
         Me.GroupBox4.TabIndex = 190
         Me.GroupBox4.TabStop = False
         Me.GroupBox4.Text = "Copy Column Data:"
@@ -4383,7 +4407,7 @@ Partial Class Main
         Me.cmbCopyDataToColumn.FormattingEnabled = True
         Me.cmbCopyDataToColumn.Location = New System.Drawing.Point(101, 99)
         Me.cmbCopyDataToColumn.Name = "cmbCopyDataToColumn"
-        Me.cmbCopyDataToColumn.Size = New System.Drawing.Size(216, 21)
+        Me.cmbCopyDataToColumn.Size = New System.Drawing.Size(245, 21)
         Me.cmbCopyDataToColumn.TabIndex = 191
         '
         'Label64
@@ -4400,7 +4424,7 @@ Partial Class Main
         Me.cmbCopyDataToTable.FormattingEnabled = True
         Me.cmbCopyDataToTable.Location = New System.Drawing.Point(101, 72)
         Me.cmbCopyDataToTable.Name = "cmbCopyDataToTable"
-        Me.cmbCopyDataToTable.Size = New System.Drawing.Size(216, 21)
+        Me.cmbCopyDataToTable.Size = New System.Drawing.Size(245, 21)
         Me.cmbCopyDataToTable.TabIndex = 189
         '
         'Label63
@@ -4417,7 +4441,7 @@ Partial Class Main
         Me.cmbCopyDataFromColumn.FormattingEnabled = True
         Me.cmbCopyDataFromColumn.Location = New System.Drawing.Point(101, 45)
         Me.cmbCopyDataFromColumn.Name = "cmbCopyDataFromColumn"
-        Me.cmbCopyDataFromColumn.Size = New System.Drawing.Size(216, 21)
+        Me.cmbCopyDataFromColumn.Size = New System.Drawing.Size(245, 21)
         Me.cmbCopyDataFromColumn.TabIndex = 187
         '
         'Label62
@@ -4434,7 +4458,7 @@ Partial Class Main
         Me.cmbCopyDataFromTable.FormattingEnabled = True
         Me.cmbCopyDataFromTable.Location = New System.Drawing.Point(101, 18)
         Me.cmbCopyDataFromTable.Name = "cmbCopyDataFromTable"
-        Me.cmbCopyDataFromTable.Size = New System.Drawing.Size(216, 21)
+        Me.cmbCopyDataFromTable.Size = New System.Drawing.Size(245, 21)
         Me.cmbCopyDataFromTable.TabIndex = 185
         '
         'Label61
@@ -4459,7 +4483,7 @@ Partial Class Main
         Me.GroupBox3.Controls.Add(Me.Label59)
         Me.GroupBox3.Location = New System.Drawing.Point(339, 6)
         Me.GroupBox3.Name = "GroupBox3"
-        Me.GroupBox3.Size = New System.Drawing.Size(295, 133)
+        Me.GroupBox3.Size = New System.Drawing.Size(352, 133)
         Me.GroupBox3.TabIndex = 189
         Me.GroupBox3.TabStop = False
         Me.GroupBox3.Text = "Sort or Shuffle or Delete Column:"
@@ -4518,7 +4542,7 @@ Partial Class Main
         Me.cmbSortColumn.FormattingEnabled = True
         Me.cmbSortColumn.Location = New System.Drawing.Point(86, 46)
         Me.cmbSortColumn.Name = "cmbSortColumn"
-        Me.cmbSortColumn.Size = New System.Drawing.Size(202, 21)
+        Me.cmbSortColumn.Size = New System.Drawing.Size(260, 21)
         Me.cmbSortColumn.TabIndex = 187
         '
         'Label60
@@ -4535,7 +4559,7 @@ Partial Class Main
         Me.cmbSortTable.FormattingEnabled = True
         Me.cmbSortTable.Location = New System.Drawing.Point(87, 19)
         Me.cmbSortTable.Name = "cmbSortTable"
-        Me.cmbSortTable.Size = New System.Drawing.Size(202, 21)
+        Me.cmbSortTable.Size = New System.Drawing.Size(259, 21)
         Me.cmbSortTable.TabIndex = 185
         '
         'Label59
@@ -4666,6 +4690,9 @@ Partial Class Main
         '
         'TabPage2
         '
+        Me.TabPage2.Controls.Add(Me.btnOpenArchive)
+        Me.TabPage2.Controls.Add(Me.btnOpenParentDir)
+        Me.TabPage2.Controls.Add(Me.btnCreateArchive)
         Me.TabPage2.Controls.Add(Me.btnShowProjectInfo)
         Me.TabPage2.Controls.Add(Me.chkConnect)
         Me.TabPage2.Controls.Add(Me.btnOpenProject)
@@ -4674,8 +4701,6 @@ Partial Class Main
         Me.TabPage2.Controls.Add(Me.txtProNetName)
         Me.TabPage2.Controls.Add(Me.Label9)
         Me.TabPage2.Controls.Add(Me.btnOpenAppDir)
-        Me.TabPage2.Controls.Add(Me.Label7)
-        Me.TabPage2.Controls.Add(Me.Label17)
         Me.TabPage2.Controls.Add(Me.btnOpenSystem)
         Me.TabPage2.Controls.Add(Me.btnOpenData)
         Me.TabPage2.Controls.Add(Me.btnOpenSettings)
@@ -4714,6 +4739,36 @@ Partial Class Main
         Me.TabPage2.TabIndex = 0
         Me.TabPage2.Text = "Project Information"
         Me.TabPage2.UseVisualStyleBackColor = True
+        '
+        'btnOpenArchive
+        '
+        Me.btnOpenArchive.Location = New System.Drawing.Point(354, 396)
+        Me.btnOpenArchive.Name = "btnOpenArchive"
+        Me.btnOpenArchive.Size = New System.Drawing.Size(94, 22)
+        Me.btnOpenArchive.TabIndex = 309
+        Me.btnOpenArchive.Text = "Open Archive"
+        Me.ToolTip1.SetToolTip(Me.btnOpenArchive, "Open a project archive file")
+        Me.btnOpenArchive.UseVisualStyleBackColor = True
+        '
+        'btnOpenParentDir
+        '
+        Me.btnOpenParentDir.Location = New System.Drawing.Point(125, 396)
+        Me.btnOpenParentDir.Name = "btnOpenParentDir"
+        Me.btnOpenParentDir.Size = New System.Drawing.Size(125, 22)
+        Me.btnOpenParentDir.TabIndex = 308
+        Me.btnOpenParentDir.Text = "Open Parent Directory"
+        Me.ToolTip1.SetToolTip(Me.btnOpenParentDir, "Open the Parent directory")
+        Me.btnOpenParentDir.UseVisualStyleBackColor = True
+        '
+        'btnCreateArchive
+        '
+        Me.btnCreateArchive.Location = New System.Drawing.Point(256, 396)
+        Me.btnCreateArchive.Name = "btnCreateArchive"
+        Me.btnCreateArchive.Size = New System.Drawing.Size(92, 22)
+        Me.btnCreateArchive.TabIndex = 306
+        Me.btnCreateArchive.Text = "Create Archive"
+        Me.ToolTip1.SetToolTip(Me.btnCreateArchive, "Create a project archive file")
+        Me.btnCreateArchive.UseVisualStyleBackColor = True
         '
         'btnShowProjectInfo
         '
@@ -4789,24 +4844,6 @@ Partial Class Main
         Me.btnOpenAppDir.TabIndex = 297
         Me.btnOpenAppDir.Text = "Open Application Directory"
         Me.btnOpenAppDir.UseVisualStyleBackColor = True
-        '
-        'Label7
-        '
-        Me.Label7.AutoSize = True
-        Me.Label7.Location = New System.Drawing.Point(571, 373)
-        Me.Label7.Name = "Label7"
-        Me.Label7.Size = New System.Drawing.Size(41, 13)
-        Me.Label7.TabIndex = 296
-        Me.Label7.Text = "d:h:m:s"
-        '
-        'Label17
-        '
-        Me.Label17.AutoSize = True
-        Me.Label17.Location = New System.Drawing.Point(374, 373)
-        Me.Label17.Name = "Label17"
-        Me.Label17.Size = New System.Drawing.Size(41, 13)
-        Me.Label17.TabIndex = 295
-        Me.Label17.Text = "d:h:m:s"
         '
         'btnOpenSystem
         '
@@ -4903,7 +4940,7 @@ Partial Class Main
         '
         Me.txtCurrentDuration.Location = New System.Drawing.Point(480, 368)
         Me.txtCurrentDuration.Name = "txtCurrentDuration"
-        Me.txtCurrentDuration.Size = New System.Drawing.Size(85, 20)
+        Me.txtCurrentDuration.Size = New System.Drawing.Size(120, 20)
         Me.txtCurrentDuration.TabIndex = 71
         '
         'Label12
@@ -4919,7 +4956,7 @@ Partial Class Main
         '
         Me.txtTotalDuration.Location = New System.Drawing.Point(283, 370)
         Me.txtTotalDuration.Name = "txtTotalDuration"
-        Me.txtTotalDuration.Size = New System.Drawing.Size(85, 20)
+        Me.txtTotalDuration.Size = New System.Drawing.Size(120, 20)
         Me.txtTotalDuration.TabIndex = 68
         '
         'Label2
@@ -5194,6 +5231,10 @@ Partial Class Main
         Me.btnAndorville.TabIndex = 49
         Me.btnAndorville.UseVisualStyleBackColor = True
         '
+        'OpenFileDialog1
+        '
+        Me.OpenFileDialog1.FileName = "OpenFileDialog1"
+        '
         'Main
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -5371,8 +5412,6 @@ Partial Class Main
     Friend WithEvents btnAdd As Button
     Friend WithEvents btnParameters As Button
     Friend WithEvents btnOpenAppDir As Button
-    Friend WithEvents Label7 As Label
-    Friend WithEvents Label17 As Label
     Friend WithEvents btnOpenSystem As Button
     Friend WithEvents btnOpenData As Button
     Friend WithEvents btnOpenSettings As Button
@@ -5782,4 +5821,10 @@ Partial Class Main
     Friend WithEvents Label26 As Label
     Friend WithEvents Label23 As Label
     Friend WithEvents Label22 As Label
+    Friend WithEvents btnOpenArchive As Button
+    Friend WithEvents btnOpenParentDir As Button
+    Friend WithEvents btnCreateArchive As Button
+    Friend WithEvents OpenFileDialog1 As OpenFileDialog
+    Friend WithEvents btnClearTableData As Button
+    Friend WithEvents btnClearColumns As Button
 End Class

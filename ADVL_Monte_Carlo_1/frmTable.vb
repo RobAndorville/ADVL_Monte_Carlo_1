@@ -51,7 +51,9 @@
         Set(value As String)
             _tableName = value
             cmbTableList.SelectedIndex = cmbTableList.FindStringExact(_tableName)
-            NRows = DataSource.Data.Tables(TableName).Rows.Count
+            If DataSource.Data.Tables.Count > 0 Then
+                NRows = DataSource.Data.Tables(TableName).Rows.Count
+            End If
         End Set
     End Property
 
