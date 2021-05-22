@@ -26,17 +26,14 @@ limitations under the License.
 The Andorville™ Monte Carlo software is used to design, run and analyse Monte Carlo simulations.
 
 For more information on Monte Carlo simulations, visit: http://www.andorville.com.au/MonteCarlo.html
+For a description of the software, visit: http://www.andorville.com.au/AdvlMonteCarlo.html
 
 #### Installation Notes
 
 The setup files are contained in the zip file: Setup_ADVL_Monte_Carlo_1_0_1_14.Zip
-
 Unzip the directory: ADVL_Monte_Carlo_1_0_1_14 
-
 The setup files are contained in this directory.
-
 Before running setup, the Andorville™ Network software should be running.
-
 Run the setup.exe file to install the software.
 
 

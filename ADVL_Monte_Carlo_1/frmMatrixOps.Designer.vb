@@ -3458,12 +3458,12 @@ Partial Class frmMatrixOps
         '
         Me.ContextMenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripMenuItem1_OpenNode})
         Me.ContextMenuStrip1.Name = "ContextMenuStrip1"
-        Me.ContextMenuStrip1.Size = New System.Drawing.Size(153, 48)
+        Me.ContextMenuStrip1.Size = New System.Drawing.Size(136, 26)
         '
         'ToolStripMenuItem1_OpenNode
         '
         Me.ToolStripMenuItem1_OpenNode.Name = "ToolStripMenuItem1_OpenNode"
-        Me.ToolStripMenuItem1_OpenNode.Size = New System.Drawing.Size(152, 22)
+        Me.ToolStripMenuItem1_OpenNode.Size = New System.Drawing.Size(135, 22)
         Me.ToolStripMenuItem1_OpenNode.Text = "Open Node"
         '
         'frmMatrixOps
@@ -3474,7 +3474,7 @@ Partial Class frmMatrixOps
         Me.Controls.Add(Me.TabControl1)
         Me.Controls.Add(Me.btnExit)
         Me.Name = "frmMatrixOps"
-        Me.Text = "frmMatrixOps"
+        Me.Text = "Matrix Operations"
         Me.TabControl1.ResumeLayout(False)
         Me.TabPage1.ResumeLayout(False)
         Me.SplitContainer1.Panel1.ResumeLayout(False)

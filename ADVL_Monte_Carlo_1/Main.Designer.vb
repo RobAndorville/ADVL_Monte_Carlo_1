@@ -661,7 +661,7 @@ Partial Class Main
         Me.WebBrowser1.Location = New System.Drawing.Point(3, 3)
         Me.WebBrowser1.MinimumSize = New System.Drawing.Size(20, 20)
         Me.WebBrowser1.Name = "WebBrowser1"
-        Me.WebBrowser1.Size = New System.Drawing.Size(1473, 703)
+        Me.WebBrowser1.Size = New System.Drawing.Size(1460, 703)
         Me.WebBrowser1.TabIndex = 68
         '
         'TabPage1
