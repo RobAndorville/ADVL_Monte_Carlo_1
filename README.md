@@ -31,6 +31,9 @@ For a description of the software, visit: http://www.andorville.com.au/AdvlMonte
 #### Installation Notes
 
 The setup files are contained in the zip file: Setup_ADVL_Monte_Carlo_1_0_1_14.Zip  
+Press **Releases** on the right edge of this page to open the Releases page.  
+The setup zip file is listed under **Assets**.
+
 Unzip the directory: ADVL_Monte_Carlo_1_0_1_14  
 The setup files are contained in this directory.  
 Before running setup, the Andorville™ Network software should be running.  
