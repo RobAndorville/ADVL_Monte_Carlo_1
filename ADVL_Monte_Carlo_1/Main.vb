@@ -569,6 +569,7 @@ Public Class Main
                                <AdvlNetworkExePath><%= AdvlNetworkExePath %></AdvlNetworkExePath>
                                <ShowXMessages><%= ShowXMessages %></ShowXMessages>
                                <ShowSysMessages><%= ShowSysMessages %></ShowSysMessages>
+                               <WorkFlowFileName><%= WorkflowFileName %></WorkFlowFileName>
                                <!---->
                                <SelectedTabIndex><%= TabControl1.SelectedIndex %></SelectedTabIndex>
                                <!---->
@@ -606,6 +607,8 @@ Public Class Main
 
             If Settings.<FormSettings>.<ShowXMessages>.Value <> Nothing Then ShowXMessages = Settings.<FormSettings>.<ShowXMessages>.Value
             If Settings.<FormSettings>.<ShowSysMessages>.Value <> Nothing Then ShowSysMessages = Settings.<FormSettings>.<ShowSysMessages>.Value
+
+            If Settings.<FormSettings>.<WorkFlowFileName>.Value <> Nothing Then WorkflowFileName = Settings.<FormSettings>.<WorkFlowFileName>.Value
 
             'Add code to read other saved setting here:
             If Settings.<FormSettings>.<SelectedTabIndex>.Value <> Nothing Then TabControl1.SelectedIndex = Settings.<FormSettings>.<SelectedTabIndex>.Value
@@ -1495,6 +1498,7 @@ Public Class Main
         'END   Initialise the form: ---------------------------------------------------------------
 
         RestoreFormSettings() 'Restore the form settings
+        OpenStartPage()
         Message.ShowXMessages = ShowXMessages
         Message.ShowSysMessages = ShowSysMessages
         RestoreProjectSettings() 'Restore the Project settings
@@ -1551,7 +1555,7 @@ Public Class Main
 
     Private Sub InitialiseForm()
         'Initialise the form for a new project.
-        OpenStartPage()
+        'OpenStartPage()
     End Sub
 
     Private Sub ShowProjectInfo()
@@ -2310,9 +2314,11 @@ Public Class Main
 #Region " Start Page Code" '=========================================================================================================================================
 
     Public Sub OpenStartPage()
-        'Open the StartPage.html file and display in the Workflow tab.
-
-        If Project.DataFileExists("StartPage.html") Then
+        'Open the workflow page:
+        If Project.DataFileExists(WorkflowFileName) Then
+            'Note: WorkflowFileName should have been restored when the application started.
+            DisplayWorkflow()
+        ElseIf Project.DataFileExists("StartPage.html") Then
             WorkflowFileName = "StartPage.html"
             DisplayWorkflow()
         Else
@@ -2320,6 +2326,15 @@ Public Class Main
             WorkflowFileName = "StartPage.html"
             DisplayWorkflow()
         End If
+
+        'If Project.DataFileExists("StartPage.html") Then
+        '    WorkflowFileName = "StartPage.html"
+        '    DisplayWorkflow()
+        'Else
+        '    CreateStartPage()
+        '    WorkflowFileName = "StartPage.html"
+        '    DisplayWorkflow()
+        'End If
 
     End Sub
 
@@ -5103,7 +5118,7 @@ Public Class Main
             Exit Sub
         End If
 
-        'Check the fine name extension:
+        'Check the file name extension:
         If LCase(FileName).EndsWith(".montecarlo") Then
             FileName = IO.Path.GetFileNameWithoutExtension(FileName) & ".MonteCarlo"
         ElseIf FileName.Contains(".") Then
@@ -15468,7 +15483,51 @@ Public Class Main
 
 #End Region 'Monte Carlo Methods --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+    Private Sub btnCopySel_Click(sender As Object, e As EventArgs) Handles btnCopySel.Click
+        'Copy the selected range to the clipboard.
 
+        'MCTableName contains the name of the displayed table.
+        If MonteCarlo.Data.Tables.Contains(MCTableName) Then
+            'Find the range of rows and columns to copy:
+            Dim ThisRow As Integer
+            Dim ThisCol As Integer
+            Dim FirstRow As Integer = dgvResults.SelectedCells(0).RowIndex
+            Dim FirstCol As Integer = dgvResults.SelectedCells(0).ColumnIndex
+            Dim LastRow As Integer = FirstRow
+            Dim LastCol As Integer = FirstCol
+
+            For Each Item In dgvResults.SelectedCells
+                ThisRow = Item.RowIndex
+                ThisCol = Item.ColumnIndex
+                If ThisRow < FirstRow Then FirstRow = ThisRow
+                If ThisRow > LastRow Then LastRow = ThisRow
+                If ThisCol < FirstCol Then FirstCol = ThisCol
+                If ThisCol > LastCol Then LastCol = ThisCol
+            Next
+
+            Dim strCopy As String = ""
+            Dim RowNo As Integer
+            Dim ColNo As Integer
+            Dim myTable As DataTable = MonteCarlo.Data.Tables(MCTableName)
+            For RowNo = FirstRow To LastRow
+                For ColNo = FirstCol To LastCol
+                    If myTable.Rows(RowNo).Item(ColNo) IsNot Nothing Then
+                        strCopy &= myTable.Rows(RowNo).Item(ColNo).ToString
+                    End If
+                    strCopy &= Chr(Keys.Tab)
+                Next
+                strCopy = strCopy.Substring(0, strCopy.Length - 1)
+                strCopy &= Environment.NewLine
+            Next
+
+            Dim DataObj As New DataObject
+            DataObj.SetText(strCopy)
+            Clipboard.SetDataObject(DataObj, True)
+        Else
+            Message.AddWarning("The data table was not found: " & MCTableName & vbCrLf)
+        End If
+
+    End Sub
 
 #End Region 'Form Methods ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -15493,9 +15552,6 @@ Public Class Main
         Public Locn As String 'The location to send the information.
     End Class
 
-    Private Sub txtCorrMatrixFormat_TextChanged(sender As Object, e As EventArgs) Handles txtCorrMatrixFormat.TextChanged
-
-    End Sub
 
 
 

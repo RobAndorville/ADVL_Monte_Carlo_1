@@ -478,6 +478,7 @@ Partial Class Main
         Me.btnAndorville = New System.Windows.Forms.Button()
         Me.ColorDialog1 = New System.Windows.Forms.ColorDialog()
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
+        Me.btnCopySel = New System.Windows.Forms.Button()
         Me.TabControl1.SuspendLayout()
         Me.TabPage3.SuspendLayout()
         Me.TabPage1.SuspendLayout()
@@ -4024,6 +4025,7 @@ Partial Class Main
         '
         'TabPage7
         '
+        Me.TabPage7.Controls.Add(Me.btnCopySel)
         Me.TabPage7.Controls.Add(Me.btnNewTableWindow)
         Me.TabPage7.Controls.Add(Me.btnPlotChart)
         Me.TabPage7.Controls.Add(Me.cmbChartList)
@@ -5235,6 +5237,16 @@ Partial Class Main
         '
         Me.OpenFileDialog1.FileName = "OpenFileDialog1"
         '
+        'btnCopySel
+        '
+        Me.btnCopySel.ContextMenuStrip = Me.ContextMenuStrip1
+        Me.btnCopySel.Location = New System.Drawing.Point(787, 6)
+        Me.btnCopySel.Name = "btnCopySel"
+        Me.btnCopySel.Size = New System.Drawing.Size(134, 22)
+        Me.btnCopySel.TabIndex = 310
+        Me.btnCopySel.Text = "Copy Selected Range"
+        Me.btnCopySel.UseVisualStyleBackColor = True
+        '
         'Main
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -5827,4 +5839,5 @@ Partial Class Main
     Friend WithEvents OpenFileDialog1 As OpenFileDialog
     Friend WithEvents btnClearTableData As Button
     Friend WithEvents btnClearColumns As Button
+    Friend WithEvents btnCopySel As Button
 End Class

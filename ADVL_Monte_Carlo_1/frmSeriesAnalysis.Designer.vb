@@ -669,7 +669,7 @@ Partial Class frmSeriesAnalysis
         Me.dgvData.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.dgvData.Location = New System.Drawing.Point(3, 33)
         Me.dgvData.Name = "dgvData"
-        Me.dgvData.Size = New System.Drawing.Size(770, 626)
+        Me.dgvData.Size = New System.Drawing.Size(732, 626)
         Me.dgvData.TabIndex = 1
         '
         'TabPage3

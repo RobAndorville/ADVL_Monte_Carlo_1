@@ -4598,7 +4598,7 @@
             'RaiseEvent Message(Format(I, "N5") & "  " & Format(CumProb(I), "N8") & vbCrLf)
         Next
 
-        'Step 2 - If neccessary, expand the Cumulative probability array until the maximum probability cutoff is reached.
+        'Step 2 - If necessary, expand the Cumulative probability array until the maximum probability cutoff is reached.
         Dim MaxProb As Double = CumProb(ProbArraySize - 1)
         While MaxProb < ProbCutoff
             'Increase the array size and add more cumulatibe probabilities.

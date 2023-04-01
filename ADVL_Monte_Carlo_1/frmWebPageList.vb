@@ -267,7 +267,7 @@
     End Sub
 
     Private Sub btnOpenInMain_Click(sender As Object, e As EventArgs) Handles btnOpenInMain.Click
-        'Open the selected web page in the Main form Start Page tab.
+        'Open the selected web page in the Main form Workflow tab.
 
         If lstWebPages.SelectedItem Is Nothing Then
             Main.Message.AddWarning("No page selected." & vbCrLf)
@@ -282,6 +282,7 @@
 
         Else
             If Main.Project.DataFileExists(FileName) Then
+                Main.WorkflowFileName = FileName
                 Dim rtbData As New IO.MemoryStream
                 Main.Project.ReadData(FileName, rtbData)
                 rtbData.Position = 0
